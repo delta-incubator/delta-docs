@@ -160,12 +160,15 @@ export default defineConfig({
             },
             {
               label: "Table deletes, updates, and merges",
-              link: "/latest/table-dml/",
+              link: "/latest/apache-spark-connector/table-dml/",
             },
-            { label: "Change data feed", link: "/latest/cdf/" },
+            {
+              label: "Change data feed",
+              link: "/latest/apache-spark-connector/change-data-feed/",
+            },
             {
               label: "Table utility commands",
-              link: "/latest/utility-commands/",
+              link: "/latest/apache-spark-connector/utility-commands/",
             },
             { label: "Constraints", link: "/latest/constraints/" },
             {
