@@ -27,7 +27,7 @@ export default defineConfig({
         replacesTitle: true,
       },
       sidebar: [
-        { label: "Latest", link: "/latest" },
+        { label: "Welcome", link: "/latest" },
         { label: "Introduction", link: "/latest/delta-intro" },
         { label: "Delta API Doc", link: "/latest/delta-apidoc" },
         {
@@ -35,111 +35,11 @@ export default defineConfig({
           items: [
             {
               label: "Quickstart",
-              items: [
-                {
-                  label: "Set up Apache Spark with Delta Lake",
-                  items: [
-                    {
-                      label: "Set up Apache Spark",
-                      link: "/latest/apache-spark-connector/quickstart/setup/",
-                    },
-                    {
-                      label: "Prerequisite: set up Java",
-                      link: "/latest/apache-spark-connector/quickstart/setup-java/",
-                    },
-                    {
-                      label: "Set up interactive shell",
-                      link: "/latest/apache-spark-connector/quickstart/setup-shell/",
-                    },
-                    {
-                      label: "Set up project",
-                      link: "/latest/apache-spark-connector/quickstart/setup-project/",
-                    },
-                  ],
-                },
-                {
-                  label: "Create a table",
-                  link: "/latest/apache-spark-connector/quickstart/create-table/",
-                },
-                {
-                  label: "Read data",
-                  link: "/latest/apache-spark-connector/quickstart/read-data/",
-                },
-                {
-                  label: "Update table data",
-                  link: "/latest/apache-spark-connector/quickstart/update-data/",
-                },
-                {
-                  label: "Read older versions of data using time travel",
-                  link: "/latest/apache-spark-connector/quickstart/time-travel/",
-                },
-                {
-                  label: "Write a stream of data to a table",
-                  link: "/latest/apache-spark-connector/quickstart/write-stream/",
-                },
-                {
-                  label: "Read a stream of changes from a table",
-                  link: "/latest/apache-spark-connector/quickstart/read-stream/",
-                },
-              ],
+              link: "/latest/apache-spark-connector/quickstart/",
             },
             {
               label: "Table batch reads and writes",
-              items: [
-                {
-                  label: "Create a table",
-                  link: "/latest/apache-spark-connector/table-batch-operations/create-table/",
-                },
-                {
-                  label: "Read a table",
-                  link: "/latest/apache-spark-connector/table-batch-operations/read-table/",
-                },
-                {
-                  label: "Query an older snapshot of a table (time travel)",
-                  link: "/latest/apache-spark-connector/table-batch-operations/time-travel/",
-                },
-                {
-                  label: "Write to a table",
-                  link: "/latest/apache-spark-connector/table-batch-operations/write-table/",
-                },
-                {
-                  label: "Schema validation",
-                  link: "/latest/apache-spark-connector/table-batch-operations/schema-validation/",
-                },
-                {
-                  label: "Update table schema",
-                  link: "/latest/apache-spark-connector/table-batch-operations/update-schema/",
-                },
-                {
-                  label: "Replace table schema",
-                  link: "/latest/apache-spark-connector/table-batch-operations/replace-schema/",
-                },
-                {
-                  label: "Views on tables",
-                  link: "/latest/apache-spark-connector/table-batch-operations/views/",
-                },
-                {
-                  label: "Table properties",
-                  link: "/latest/apache-spark-connector/table-batch-operations/properties/",
-                },
-                {
-                  label:
-                    "Syncing table schema and properties to the Hive metastore",
-                  link: "/latest/apache-spark-connector/table-batch-operations/sync-hive/",
-                },
-                {
-                  label: "Table metadata",
-                  link: "/latest/apache-spark-connector/table-batch-operations/metadata/",
-                },
-                {
-                  label: "Configure SparkSession",
-                  link: "/latest/apache-spark-connector/table-batch-operations/spark-session/",
-                },
-                {
-                  label: "Configure storage credentials",
-                  link: "/latest/apache-spark-connector/table-batch-operations/storage-credentials/",
-                },
-              ],
+              link: "/latest/apache-spark-connector/table-batch-operations/",
             },
             {
               label: "Table streaming reads and writes",
