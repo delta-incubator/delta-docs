@@ -39,28 +39,15 @@ export default defineConfig({
             },
             {
               label: "Table batch reads and writes",
-              link: "/latest/apache-spark-connector/table-batch-operations/",
+              link: "/latest/apache-spark-connector/table-batch-reads-and-writes/",
             },
             {
               label: "Table streaming reads and writes",
-              items: [
-                {
-                  label: "Delta table as a source",
-                  link: "/latest/apache-spark-connector/table-streaming/delta-source/",
-                },
-                {
-                  label: "Delta table as a sink",
-                  link: "/latest/apache-spark-connector/table-streaming/delta-sink/",
-                },
-                {
-                  label: "Idempotent table writes in foreachBatch",
-                  link: "/latest/apache-spark-connector/table-streaming/idempotent-writes/",
-                },
-              ],
+              link: "/latest/apache-spark-connector/table-streaming-reads-and-writes/",
             },
             {
               label: "Table deletes, updates, and merges",
-              link: "/latest/apache-spark-connector/table-dml/",
+              link: "/latest/apache-spark-connector/table-deletes-updates-and-merges/",
             },
             {
               label: "Change data feed",
@@ -68,7 +55,7 @@ export default defineConfig({
             },
             {
               label: "Table utility commands",
-              link: "/latest/apache-spark-connector/utility-commands/",
+              link: "/latest/apache-spark-connector/table-utility-commands/",
             },
             { label: "Constraints", link: "/latest/constraints/" },
             {
