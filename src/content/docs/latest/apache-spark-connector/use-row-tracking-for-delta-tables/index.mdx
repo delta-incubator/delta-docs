@@ -113,11 +113,11 @@ Instead, these metadata fields must be manually selected from the hidden `_metad
     table_name; ```
   </TabItem>
   <TabItem label="Python">
-    ```python spark.read.table("table_name") \ .select("_metadata.row_id",
+    ```python spark.read.table("table_name").select("_metadata.row_id",
     "_metadata.row_commit_version", "*") ```
   </TabItem>
   <TabItem label="Scala">
-    ```scala spark.read.table("table_name") .select("_metadata.row_id",
+    ```scala spark.read.table("table_name").select("_metadata.row_id",
     "_metadata.row_commit_version", "*") ```
   </TabItem>
 </Tabs>

@@ -63,7 +63,7 @@ You must also enable column mapping to use UniForm. It is set automatically duri
   <TabItem label="SQL">
     ```sql CREATE TABLE T(c1 INT) USING DELTA TBLPROPERTIES(
     'delta.enableIcebergCompatV2' = 'true',
-    'delta.universalFormat.enabledFormats' = 'iceberg'); ```
+    'delta.universalFormat.enabledFormats' = 'iceberg' ); ```
   </TabItem>
 </Tabs>
 
@@ -73,7 +73,7 @@ In Delta 3.3 and above, you can enable or upgrade UniForm Iceberg on an existing
   <TabItem label="SQL">
     ```sql ALTER TABLE table_name SET TBLPROPERTIES(
     'delta.enableIcebergCompatV2' = 'true',
-    'delta.universalFormat.enabledFormats' = 'iceberg'); ```
+    'delta.universalFormat.enabledFormats' = 'iceberg' ); ```
   </TabItem>
 </Tabs>
 
@@ -180,8 +180,8 @@ You are able to read UniForm tables as Hudi tables in Apache Spark with the foll
 
 <Tabs>
   <TabItem label="Scala">
-    ```scala spark.read.format("hudi").option("hoodie.metadata.enable",
-    "true").load("PATH_TO_UNIFORM_TABLE_DIRECTORY") ```
+    ```scala spark.read.format("hudi") .option("hoodie.metadata.enable", "true")
+    .load("PATH_TO_UNIFORM_TABLE_DIRECTORY") ```
   </TabItem>
 </Tabs>
 
