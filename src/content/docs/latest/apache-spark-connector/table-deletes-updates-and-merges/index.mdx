@@ -71,7 +71,7 @@ deltaTable.delete(functions.col("birthDate").lt(functions.lit("1955-01-01")));`}
 
 See the [Delta Lake APIs](delta-apidoc.html) for details.
 
-<Aside type="note" title="Important">
+<Aside type="caution" title="Important">
   `delete` removes the data from the latest version of the Delta table but does
   not remove it from the physical storage until the old versions are explicitly
   vacuumed. See [vacuum](delta-utility.html#-delta-vacuum) for details.
@@ -352,7 +352,7 @@ new HashMap<String, String>() {{
 
 See the [Delta Lake APIs](delta-apidoc.html) for Scala, Java, and Python syntax details.
 
-<Aside type="note" title="Important">
+<Aside type="caution" title="Important">
   Delta Lake merge operations typically require two passes over the source data.
   If your source data contains nondeterministic expressions, multiple passes on
   the source data can produce different rows causing incorrect results. Some

@@ -45,7 +45,7 @@ You must explicitly enable the change data feed option using one of the followin
   lang="sql"
 />
 
-<Aside type="note" title="Important">
+<Aside type="caution" title="Important">
 Once you enable the change data feed option for a table, you can no longer write to the table using Delta Lake 1.2.1 or below. You can always read the table.
 
 Only changes made _after_ you enable the change data feed are recorded; past changes to a table are not captured.
@@ -243,7 +243,7 @@ the value after the update.
 
 With column mapping enabled on a Delta table, you can drop or rename columns in the table without rewriting data files for existing data. With column mapping enabled, change data feed has limitations after performing non-additive schema changes such as renaming or dropping a column, changing data type, or nullability changes.
 
-<Aside type="note" title="Important">
+<Aside type="caution" title="Important">
 In Delta Lake 2.0 and before, tables with column mapping enabled do not support streaming reads or batch reads on change data feed.
 
 In Delta Lake 2.1, tables with column mapping enabled support batch reads on change data feed as long as there are no non-additive schema changes. Streaming reads of change data feed of tables with column mapping enabled is not supported.

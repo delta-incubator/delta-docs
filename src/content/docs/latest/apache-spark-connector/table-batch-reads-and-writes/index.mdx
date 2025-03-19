@@ -210,7 +210,7 @@ You can use an [EXPLAIN](https://spark.apache.org/docs/latest/sql-ref-syntax-qry
 
 ### Use identity columns
 
-<Aside type="note" title="Important">
+<Aside type="caution" title="Important">
   Declaring an identity column on a Delta table disables concurrent
   transactions. Only use identity columns in use cases where concurrent writes
   to the target table are not required.
@@ -285,7 +285,7 @@ the table in the metastore automatically inherits the schema, partitioning, and 
 
 - If you specify _any configuration_ (schema, partitioning, or table properties), Delta Lake verifies that the specification exactly matches the configuration of the existing data.
 
-<Aside type="note" title="Important">
+<Aside type="caution" title="Important">
   If the specified configuration does not _exactly_ match the configuration of
   the data, Delta Lake throws an exception that describes the discrepancy.
 </Aside>
@@ -306,7 +306,7 @@ the table in the metastore automatically inherits the schema, partitioning, and 
 
 Delta Lake supports generated columns which are a special type of columns whose values are automatically generated based on a user-specified function over other columns in the Delta table. When you write to a table with generated columns and you do not explicitly provide values for them, Delta Lake automatically computes the values. For example, you can automatically generate a date column (for partitioning the table by date) from the timestamp column; any writes into the table need only specify the data for the timestamp column. However, if you explicitly provide values for them, the values must satisfy the [constraint](delta-constraints.md) `(<value> <=> <generation expression>) IS TRUE` or the write will fail with an error.
 
-<Aside type="note" title="Important">
+<Aside type="caution" title="Important">
   Tables created with generated columns have a higher table writer protocol
   version than the default. See [How does Delta Lake manage feature
   compatibility?](versioning.md) to understand table protocol versioning and
@@ -430,7 +430,7 @@ You can use an [EXPLAIN](https://spark.apache.org/docs/latest/sql-ref-syntax-qry
 
 ### Use identity columns
 
-<Aside type="note" title="Important">
+<Aside type="caution" title="Important">
   Declaring an identity column on a Delta table disables concurrent
   transactions. Only use identity columns in use cases where concurrent writes
   to the target table are not required.
@@ -1054,7 +1054,7 @@ Dynamic partition overwrite conflicts with the option `replaceWhere` for partiti
 - You'll receive an error if the `DataFrameWriter` options have both dynamic partition overwrite and `replaceWhere` enabled.
   </Aside>
 
-<Aside type="note" title="Dynamic Partition Overwrite Limitations">
+<Aside type="caution" title="Dynamic Partition Overwrite Limitations">
 Validate that the data written with dynamic partition overwrite touches only the expected partitions. A single row in the incorrect partition can lead to unintentionally overwriting an entire partition. We recommend using `replaceWhere` to specify which data to overwrite.
 
 If a partition has been accidentally overwritten, you can use [Restore a Delta table to an earlier state](delta-utility.md#-restore-a-delta-table-to-an-earlier-state) to undo the change.
@@ -1177,7 +1177,7 @@ Delta Lake lets you update the schema of a table. The following types of changes
 
 You can make these changes explicitly using DDL or implicitly using DML.
 
-<Aside type="note" title="Important">
+<Aside type="caution" title="Important">
   When you update a Delta table schema, streams that read from that table
   terminate. If you want the stream to continue you must restart it.
 </Aside>
@@ -1399,7 +1399,7 @@ Then the schema after is:
   currently experimental.
 </Aside>
 
-<Aside type="note" title="Important">
+<Aside type="caution" title="Important">
   Dropping a column from metadata does not delete the underlying data for the
   column in files.
 </Aside>

@@ -57,44 +57,74 @@ export default defineConfig({
               label: "Table utility commands",
               link: "/latest/apache-spark-connector/table-utility-commands/",
             },
-            { label: "Constraints", link: "/latest/constraints/" },
+            {
+              label: "Constraints",
+              link: "/latest/apache-spark-connector/constraints/",
+            },
             {
               label: "How does Delta Lake manage feature compatibility?",
-              link: "/latest/feature-compatibility/",
+              link: "/latest/apache-spark-connector/how-does-delta-lake-manage-feature-compatibility/",
             },
             {
               label: "Delta default column values",
-              link: "/latest/default-columns/",
+              link: "/latest/apache-spark-connector/delta-default-column-values/",
             },
-            { label: "Delta column mapping", link: "/latest/column-mapping/" },
+            {
+              label: "Delta column mapping",
+              link: "/latest/apache-spark-connector/delta-column-mapping/",
+            },
             {
               label: "Use liquid clustering for Delta tables",
-              link: "/latest/liquid-clustering/",
+              link: "/latest/apache-spark-connector/use-liquid-clustering-for-delta-tables/",
             },
             {
               label: "What are deletion vectors?",
-              link: "/latest/deletion-vectors/",
+              link: "/latest/apache-spark-connector/what-are-deletion-vectors/",
             },
             {
               label: "Drop Delta table features",
-              link: "/latest/drop-features/",
+              link: "/latest/apache-spark-connector/drop-delta-table-features/",
             },
             {
               label: "Use row tracking for Delta tables",
-              link: "/latest/row-tracking/",
+              link: "/latest/apache-spark-connector/use-row-tracking-for-delta-tables/",
             },
-            { label: "Storage configuration", link: "/latest/storage-config/" },
-            { label: "Delta type widening", link: "/latest/type-widening/" },
-            { label: "Universal Format (UniForm)", link: "/latest/uniform/" },
+            {
+              label: "Storage configuration",
+              link: "/latest/apache-spark-connector/storage-configuration/",
+            },
+            {
+              label: "Delta type widening",
+              link: "/latest/apache-spark-connector/delta-type-widening/",
+            },
+            {
+              label: "Universal Format (UniForm)",
+              link: "/latest/apache-spark-connector/universal-format-uniform/",
+            },
             {
               label: "Read Delta Sharing Tables",
-              link: "/latest/delta-sharing/",
+              link: "/latest/apache-spark-connector/read-delta-sharing-tables/",
             },
-            { label: "Concurrency control", link: "/latest/concurrency/" },
-            { label: "Migration guide", link: "/latest/migration/" },
-            { label: "Best practices", link: "/latest/best-practices/" },
-            { label: "Frequently asked questions (FAQ)", link: "/latest/faq/" },
-            { label: "Optimizations", link: "/latest/optimizations/" },
+            {
+              label: "Concurrency control",
+              link: "/latest/apache-spark-connector/concurrency-control/",
+            },
+            {
+              label: "Migration guide",
+              link: "/latest/apache-spark-connector/migration-guide/",
+            },
+            {
+              label: "Best practices",
+              link: "/latest/apache-spark-connector/best-practices/",
+            },
+            {
+              label: "Frequently asked questions (FAQ)",
+              link: "/latest/apache-spark-connector/faq/",
+            },
+            {
+              label: "Optimizations",
+              link: "/latest/apache-spark-connector/optimizations/",
+            },
           ],
         },
       ],
