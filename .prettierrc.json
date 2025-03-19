@@ -10,9 +10,11 @@
       }
     },
     {
-      "files": "*.md",
+      "files": ["*.md", "*.mdx"],
       "options": {
-        "useTabs": true
+        "parser": "mdx",
+        "useTabs": false,
+        "tabWidth": 2
       }
     }
   ]

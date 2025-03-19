@@ -259,9 +259,9 @@ The default `expireTime` will be one day after the DynamoDB entry was marked as 
 
     A more automated option is to use an [S3 Lifecycle Expiration rule](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html), with filter prefix pointing to the `<delta_table_path>/_delta_log/.tmp/` folder located in your table path, and an expiration value of 30 days.
 
-    <Aside type="note">
-It is important that you choose a sufficiently large expiration value. As stated above, the latest temp file will be used during recovery of a failed commit. If this temp file is deleted, then your DynamoDB table and S3 `<delta_table_path>/_delta_log/.tmp/` folder will be out of sync.
-</Aside>
+  <Aside type="note">
+  It is important that you choose a sufficiently large expiration value. As stated above, the latest temp file will be used during recovery of a failed commit. If this temp file is deleted, then your DynamoDB table and S3 `<delta_table_path>/_delta_log/.tmp/` folder will be out of sync.
+  </Aside>
 
     There are a variety of ways to configuring a bucket lifecycle configuration, described in AWS docs [here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/how-to-set-lifecycle-configuration-intro.html).
 

@@ -127,6 +127,10 @@ export default defineConfig({
             },
           ],
         },
+        {
+          label: "Releases",
+          link: "/latest/releases/",
+        },
       ],
       plugins: [pluginDocs()],
     }),

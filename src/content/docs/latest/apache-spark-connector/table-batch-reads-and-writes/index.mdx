@@ -1048,7 +1048,7 @@ INSERT OVERWRITE TABLE default.people10m SELECT * FROM morePeople;`} lang="sql" 
 </Tabs>
 
 <Aside type="note">
-Dynamic partition overwrite conflicts with the option `replaceWhere` for partitioned tables.
+  Dynamic partition overwrite conflicts with the option `replaceWhere` for partitioned tables.
 
 - If dynamic partition overwrite is enabled in the Spark session configuration, and `replaceWhere` is provided as a `DataFrameWriter` option, then Delta Lake overwrites the data according to the `replaceWhere` expression (query-specific options override session configurations).
 - You'll receive an error if the `DataFrameWriter` options have both dynamic partition overwrite and `replaceWhere` enabled.

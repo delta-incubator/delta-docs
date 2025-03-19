@@ -141,9 +141,9 @@ If the name of a partition column in a Delta table contains invalid characters (
     .save("/the/delta/table/path") ```
   </TabItem>
   <TabItem label="Scala">
-    ```scala spark.read .format("delta") .load("/the/delta/table/path")
-    .withColumnRenamed("column name", "column-name") .write .format("delta")
-    .mode("overwrite") .option("overwriteSchema", "true")
+    ```scala spark.read \ .format("delta") \ .load("/the/delta/table/path") \
+    .withColumnRenamed("column name", "column-name") \ .write \ .format("delta")
+    \ .mode("overwrite") \ .option("overwriteSchema", "true") \
     .save("/the/delta/table/path") ```
   </TabItem>
 </Tabs>
