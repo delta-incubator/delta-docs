@@ -1,6 +1,8 @@
 {
   "tabWidth": 2,
   "useTabs": false,
+  "printWidth": 80,
+  "proseWrap": "always",
   "plugins": ["prettier-plugin-astro"],
   "overrides": [
     {
@@ -14,7 +16,12 @@
       "options": {
         "parser": "mdx",
         "useTabs": false,
-        "tabWidth": 2
+        "tabWidth": 2,
+        "printWidth": 80,
+        "proseWrap": "always",
+        "singleQuote": false,
+        "embeddedLanguageFormatting": "auto",
+        "htmlWhitespaceSensitivity": "strict"
       }
     }
   ]
