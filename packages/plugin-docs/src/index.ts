@@ -1,1 +1,0 @@
-export { pluginDocs } from "./pluginDocs";

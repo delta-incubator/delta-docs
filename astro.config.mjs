@@ -1,7 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
-import { pluginDocs } from "plugin-docs";
 
 // https://astro.build/config
 export default defineConfig({
@@ -27,7 +26,6 @@ export default defineConfig({
         replacesTitle: true,
       },
       sidebar: ["latest", "latest/delta-intro", "latest/delta-apidoc"],
-      plugins: [pluginDocs()],
     }),
   ],
 });
