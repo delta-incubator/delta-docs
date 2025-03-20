@@ -10,19 +10,14 @@ import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
   currently experimental with [known limitations](#known-limitations).
 </Aside>
 
-[Column mapping feature](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#column-mapping)
-allows Delta table columns and the underlying Parquet file columns to use
-different names. This enables Delta schema evolution operations such as
-`RENAME COLUMN` and `DROP COLUMNS` on a Delta table without the need to rewrite
-the underlying Parquet files. It also allows users to name Delta table columns
-by using
-[characters that are not allowed](#supported-characters-in-column-names) by
-Parquet, such as spaces, so that users can directly ingest CSV or JSON data into
-Delta without the need to rename columns due to previous character constraints.
+[Column mapping feature](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#column-mapping) allows Delta table columns and the underlying Parquet file columns to use different names. This enables Delta schema evolution operations such as `RENAME COLUMN` and `DROP COLUMNS` on a Delta table without the need to rewrite the underlying Parquet files. It also allows users to name Delta table columns by using [characters that are not allowed](#supported-characters-in-column-names) by Parquet, such as spaces, so that users can directly ingest CSV or JSON data into Delta without the need to rename columns due to previous character constraints.
 
 ## How to enable Delta Lake column mapping
 
-<Aside type="caution" title="Important">
+<Aside
+  type="caution"
+  title="Important"
+>
   Enabling column mapping for a table upgrades the Delta [table
   version](/latest/apache-spark-connector/how-does-delta-lake-manage-feature-compatibility/#what-is-a-protocol-version).
   This protocol upgrade is irreversible. Tables with column mapping enabled can
@@ -34,11 +29,9 @@ Column mapping requires the following Delta protocols:
 - Reader version 2 or above.
 - Writer version 5 or above.
 
-For a Delta table with the required protocol versions, you can enable column
-mapping by setting `delta.columnMapping.mode` to `name`.
+For a Delta table with the required protocol versions, you can enable column mapping by setting `delta.columnMapping.mode` to `name`.
 
-You can use the following command to upgrade the table version and enable column
-mapping:
+You can use the following command to upgrade the table version and enable column mapping:
 
 <Tabs>
   <TabItem label="SQL">
@@ -69,18 +62,20 @@ When column mapping is enabled for a Delta table, you can rename a column:
   </TabItem>
 </Tabs>
 
-For more examples, see
-[Rename columns](/latest/apache-spark-connector/table-batch-operations/#rename-columns).
+For more examples, see [Rename columns](/latest/apache-spark-connector/table-batch-operations/#rename-columns).
 
 ## Drop columns
 
-When column mapping is enabled for a Delta table, you can drop one or more
-columns:
+When column mapping is enabled for a Delta table, you can drop one or more columns:
 
 <Tabs>
   <TabItem label="SQL">
-    ```sql ALTER TABLE table_name DROP COLUMN col_name ALTER TABLE table_name
-    DROP COLUMNS (col_name_1, col_name_2, ...) ```
+```sql
+ALTER TABLE table_name DROP COLUMN col_name;
+
+ALTER TABLE table_name DROP COLUMNS (col_name_1, col_name_2, ...);
+
+```
   </TabItem>
 </Tabs>
 
@@ -111,3 +106,4 @@ as any of these characters in the table's column names: `,;{}()\n\t=`.
   [Tracking non-additive schema changes](/latest/apache-spark-connector/table-streaming/#schema-tracking)
 - The Delta table protocol specifies two modes of column mapping, by `name` and
   by `id`. Delta Lake 2.1 and below do not support `id` mode.
+```

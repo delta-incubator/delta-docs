@@ -1,8 +1,4 @@
 {
-  "tabWidth": 2,
-  "useTabs": false,
-  "printWidth": 80,
-  "proseWrap": "always",
   "plugins": ["prettier-plugin-astro"],
   "overrides": [
     {
@@ -15,13 +11,12 @@
       "files": ["*.md", "*.mdx"],
       "options": {
         "parser": "mdx",
-        "useTabs": false,
-        "tabWidth": 2,
-        "printWidth": 80,
-        "proseWrap": "always",
-        "singleQuote": false,
+        "proseWrap": "never",
         "embeddedLanguageFormatting": "auto",
-        "htmlWhitespaceSensitivity": "strict"
+        "htmlWhitespaceSensitivity": "css",
+        "bracketSameLine": false,
+        "singleAttributePerLine": true,
+        "tabWidth": 2
       }
     }
   ]

@@ -5,25 +5,17 @@ description: Learn how to read shared Delta tables using Delta Sharing protocol
 
 import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
 
-[Delta Sharing](https://delta.io/sharing/) is an open protocol for secure real-time exchange of large datasets, which enables
-organizations to share data in real time regardless of which computing platforms they use.
-It is a simple REST protocol that securely grants access to part of a cloud dataset and leverages
-modern cloud storage systems, such as S3, ADLS, GCS or R2, to reliably transfer data.
+[Delta Sharing](https://delta.io/sharing/) is an open protocol for secure real-time exchange of large datasets, which enables organizations to share data in real time regardless of which computing platforms they use. It is a simple REST protocol that securely grants access to part of a cloud dataset and leverages modern cloud storage systems, such as S3, ADLS, GCS or R2, to reliably transfer data.
 
-In Delta Sharing, data provider is the one who owns the original dataset or table, and shares it with a broad range of recipients.
-Each table can be configured to be shared with different options (history, filtering, etc.) We will focus on consuming the shared table in this doc.
+In Delta Sharing, data provider is the one who owns the original dataset or table, and shares it with a broad range of recipients. Each table can be configured to be shared with different options (history, filtering, etc.) We will focus on consuming the shared table in this doc.
 
-Delta Sharing data source supports most of the options provided by Apache Spark DataFrame for performing reads through [batch](/latest/delta-batch), [streaming](/latest/delta-streaming), or [table changes (CDF)](/latest/delta-change-data-feed) APIs on shared tables.
-Delta Sharing doesn't support writing to a shared table. Please refer to the [Delta Sharing Repo](https://github.com/delta-io/delta-sharing/blob/main/README.md) for more details.
-Please follow the [quick start](https://github.com/delta-io/delta-sharing?tab=readme-ov-file#quick-start) to leverage the Delta Sharing python connector to discover the shared tables.
+Delta Sharing data source supports most of the options provided by Apache Spark DataFrame for performing reads through [batch](/latest/delta-batch), [streaming](/latest/delta-streaming), or [table changes (CDF)](/latest/delta-change-data-feed) APIs on shared tables. Delta Sharing doesn't support writing to a shared table. Please refer to the [Delta Sharing Repo](https://github.com/delta-io/delta-sharing/blob/main/README.md) for more details. Please follow the [quick start](https://github.com/delta-io/delta-sharing?tab=readme-ov-file#quick-start) to leverage the Delta Sharing python connector to discover the shared tables.
 
-For Delta Sharing reads on shared tables with advanced Delta Lake features such as [Deletion Vectors](/latest/delta-deletion-vectors) and [Column Mapping](/latest/delta-column-mapping),
-you need to enable integration with Apache Spark DataSourceV2 and Catalog APIs (since delta-sharing-spark 3.1) by setting the same configurations as Delta Lake when you create a new `SparkSession`. See [Configure SparkSession](/latest/delta-batch#sql-support).
+For Delta Sharing reads on shared tables with advanced Delta Lake features such as [Deletion Vectors](/latest/delta-deletion-vectors) and [Column Mapping](/latest/delta-column-mapping), you need to enable integration with Apache Spark DataSourceV2 and Catalog APIs (since delta-sharing-spark 3.1) by setting the same configurations as Delta Lake when you create a new `SparkSession`. See [Configure SparkSession](/latest/delta-batch#sql-support).
 
 ## Read a snapshot
 
-After you save the [Profile File](https://github.com/delta-io/delta-sharing/blob/main/PROTOCOL.md#profile-file-format) locally and launch Spark with the connector library, you can access shared tables.
-A profile file is provided by the data provider to the data recipient.
+After you save the [Profile File](https://github.com/delta-io/delta-sharing/blob/main/PROTOCOL.md#profile-file-format) locally and launch Spark with the connector library, you can access shared tables. A profile file is provided by the data provider to the data recipient.
 
 <Tabs>
   <TabItem label="SQL">
@@ -162,11 +154,9 @@ Once the data provider turns on CDF on the original Delta Lake table and shares 
 
 ## Streaming
 
-Delta Sharing Streaming is deeply integrated with [Spark Structured Streaming](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html) through `readStream`,
-and able to connect with any sink that is able to perform `writeStream`.
+Delta Sharing Streaming is deeply integrated with [Spark Structured Streaming](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html) through `readStream`, and able to connect with any sink that is able to perform `writeStream`.
 
-Once the data provider shares a table with history, the recipient can perform a streaming query on the table.
-When you load a Delta Sharing table as a stream source and use it in a streaming query, the query processes all of the data present in the shared table as well as any new data that arrives after the stream has started.
+Once the data provider shares a table with history, the recipient can perform a streaming query on the table. When you load a Delta Sharing table as a stream source and use it in a streaming query, the query processes all of the data present in the shared table as well as any new data that arrives after the stream has started.
 
 <Tabs>
   <TabItem label="Scala">
@@ -178,12 +168,9 @@ When you load a Delta Sharing table as a stream source and use it in a streaming
   </TabItem>
 </Tabs>
 
-Delta Sharing Streaming supports the following functionalities in the same way as Delta Streaming: [Limit input rate](/latest/delta-streaming#limit-input-rate),
-[Ignore updates and deletes](/latest/delta-streaming#ignore-updates-and-deletes), [Specify initial position](/latest/delta-streaming#specify-initial-position)
+Delta Sharing Streaming supports the following functionalities in the same way as Delta Streaming: [Limit input rate](/latest/delta-streaming#limit-input-rate), [Ignore updates and deletes](/latest/delta-streaming#ignore-updates-and-deletes), [Specify initial position](/latest/delta-streaming#specify-initial-position)
 
-In addition, `maxVersionsPerRpc` is provided to decide how many versions of files are requested from the server in every Delta Sharing rpc. This is to help
-reduce the per rpc workload and make the Delta sharing streaming job more stable,
-especially when many new versions have accumulated when the streaming resumes from a checkpoint. The default is 100.
+In addition, `maxVersionsPerRpc` is provided to decide how many versions of files are requested from the server in every Delta Sharing rpc. This is to help reduce the per rpc workload and make the Delta sharing streaming job more stable, especially when many new versions have accumulated when the streaming resumes from a checkpoint. The default is 100.
 
 <Aside type="note">
   Trigger.AvailableNow is not supported in Delta Sharing Streaming. You can use
@@ -193,21 +180,19 @@ especially when many new versions have accumulated when the streaming resumes fr
 
 ## Read Advanced Delta Lake Features in Delta Sharing
 
-In order to support advanced Delta Lake features in Delta Sharing, "Delta Format Sharing" was introduced since delta-sharing-client 1.0 and delta-sharing-spark 3.1,
-in which the actions of a shared table are returned in Delta Lake format, allowing a Delta Lake library to read it.
+In order to support advanced Delta Lake features in Delta Sharing, "Delta Format Sharing" was introduced since delta-sharing-client 1.0 and delta-sharing-spark 3.1, in which the actions of a shared table are returned in Delta Lake format, allowing a Delta Lake library to read it.
 
 Please remember to set the spark configurations mentioned in [Configure SparkSession](/latest/delta-batch#sql-support) in order to read shared tables with Deletion Vectors and Column Mapping.
 
-| Read Table Feature                                                                                    | Available since version |
-| ----------------------------------------------------------------------------------------------------- | ----------------------- |
-| [Deletion Vectors](/latest/delta-deletion-vectors)                                                    | 3.1.0                   |
-| [Column Mapping](/latest/delta-column-mapping)                                                        | 3.1.0                   |
-| [Timestamp without Timezone](https://spark.apache.org/docs/latest/sql-ref-datatypes.html)             | 3.3.0                   |
-| [Type widening (Preview)](/latest/delta-type-widening)                                                | 3.3.0                   |
-| [Variant Type (Preview)](https://github.com/delta-io/delta/blob/master/protocol_rfcs/variant-type.md) | 3.3.0                   |
+| Read Table Feature | Available since version |
+| --- | --- |
+| [Deletion Vectors](/latest/delta-deletion-vectors) | 3.1.0 |
+| [Column Mapping](/latest/delta-column-mapping) | 3.1.0 |
+| [Timestamp without Timezone](https://spark.apache.org/docs/latest/sql-ref-datatypes.html) | 3.3.0 |
+| [Type widening (Preview)](/latest/delta-type-widening) | 3.3.0 |
+| [Variant Type (Preview)](https://github.com/delta-io/delta/blob/master/protocol_rfcs/variant-type.md) | 3.3.0 |
 
-Batch queries can be performed as is, because it can automatically resolve the `responseFormat` based on the table features of the shared table.
-An additional option `responseFormat=delta` needs to be set for cdf and streaming queries when reading shared tables with Deletion Vectors or Column Mapping enabled.
+Batch queries can be performed as is, because it can automatically resolve the `responseFormat` based on the table features of the shared table. An additional option `responseFormat=delta` needs to be set for cdf and streaming queries when reading shared tables with Deletion Vectors or Column Mapping enabled.
 
 <Tabs>
   <TabItem label="Scala">

@@ -17,7 +17,10 @@ This information is stored in the [StructField](https://github.com/delta-io/delt
 
 ## How to enable Delta Lake default column values
 
-<Aside type="caution" title="Important">
+<Aside
+  type="caution"
+  title="Important"
+>
   Enabling default column values for a Delta table will upgrade its [protocol
   version](/latest/apache-spark-connector/how-does-delta-lake-manage-feature-compatibility/#what-is-a-protocol-version)
   to support [table
@@ -44,7 +47,10 @@ You can enable default column values for a table by setting `delta.feature.allow
 
 - It is also possible for INSERT commands to specify lists of fewer columns than the target table, in which case the engine will assign default values for the remaining columns (or NULL for any columns where no defaults yet exist).
 
-<Aside type="caution" title="Important">
+<Aside
+  type="caution"
+  title="Important"
+>
   The metadata discussed here apply solely to write operations, not read
   operations.
 </Aside>

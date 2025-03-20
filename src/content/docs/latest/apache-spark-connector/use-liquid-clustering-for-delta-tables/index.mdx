@@ -66,7 +66,10 @@ To enable liquid clustering, add the `CLUSTER BY` phrase to a table creation sta
   </TabItem>
 </Tabs>
 
-<Aside type="caution" title="Warning">
+<Aside
+  type="caution"
+  title="Warning"
+>
   Tables created with liquid clustering have `Clustering` and `DomainMetadata`
   table features enabled (both writer features) and use Delta writer version 7
   and reader version 1. Table protocol versions cannot be downgraded. See [How
@@ -85,7 +88,10 @@ In Delta Lake 3.3 and above you can enable liquid clustering on an existing unpa
   </TabItem>
 </Tabs>
 
-<Aside type="caution" title="Important">
+<Aside
+  type="caution"
+  title="Important"
+>
   Default behavior does not apply clustering to previously written data. To
   force reclustering for all records, you must use `OPTIMIZE FULL`. See
   [Recluster entire table](#recluster-entire-table).
@@ -97,11 +103,11 @@ Clustering columns can be defined in any order. If two columns are correlated, y
 
 If you're converting an existing table, consider the following recommendations:
 
-| Current data optimization technique                                         | Recommendation for clustering columns                                                |
-| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Hive-style partitioning                                                     | Use partition columns as clustering columns.                                         |
-| Z-order indexing                                                            | Use the `ZORDER BY` columns as clustering columns.                                   |
-| Hive-style partitioning and Z-order                                         | Use both partition columns and `ZORDER BY` columns as clustering columns.            |
+| Current data optimization technique | Recommendation for clustering columns |
+| --- | --- |
+| Hive-style partitioning | Use partition columns as clustering columns. |
+| Z-order indexing | Use the `ZORDER BY` columns as clustering columns. |
+| Hive-style partitioning and Z-order | Use both partition columns and `ZORDER BY` columns as clustering columns. |
 | Generated columns to reduce cardinality (for example, date for a timestamp) | Use the original column as a clustering column, and don't create a generated column. |
 
 ## Write data to a clustered table
@@ -126,7 +132,10 @@ In Delta Lake 3.3 and above, you can force reclustering of all records in a tabl
   <TabItem label="SQL">```sql OPTIMIZE table_name FULL; ```</TabItem>
 </Tabs>
 
-<Aside type="caution" title="Important">
+<Aside
+  type="caution"
+  title="Important"
+>
   Running `OPTIMIZE FULL` reclusters all existing data as necessary. For large
   tables that have not previously been clustered on the specified columns, this
   operation might take hours.

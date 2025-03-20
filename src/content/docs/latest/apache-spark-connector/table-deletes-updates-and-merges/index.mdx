@@ -43,14 +43,12 @@ deltaTable.delete(col('birthDate') < '1960-01-01')`} lang="python" />
 
 val deltaTable = DeltaTable.forPath(spark, "/tmp/delta/people-10m")
 
-// Declare the predicate by using a SQL-formatted string.
-deltaTable.delete("birthDate < '1955-01-01'")
+// Declare the predicate by using a SQL-formatted string. deltaTable.delete("birthDate < '1955-01-01'")
 
 import org.apache.spark.sql.functions._
 import spark.implicits._
 
-// Declare the predicate by using Spark SQL functions and implicits.
-deltaTable.delete(col("birthDate") < "1955-01-01")`} lang="scala" />
+// Declare the predicate by using Spark SQL functions and implicits. deltaTable.delete(col("birthDate") < "1955-01-01")`} lang="scala" />
 
   </TabItem>
 
@@ -60,18 +58,19 @@ import org.apache.spark.sql.functions;
 
 DeltaTable deltaTable = DeltaTable.forPath(spark, "/tmp/delta/people-10m");
 
-// Declare the predicate by using a SQL-formatted string.
-deltaTable.delete("birthDate < '1955-01-01'");
+// Declare the predicate by using a SQL-formatted string. deltaTable.delete("birthDate < '1955-01-01'");
 
-// Declare the predicate by using Spark SQL functions.
-deltaTable.delete(functions.col("birthDate").lt(functions.lit("1955-01-01")));`} lang="java" />
+// Declare the predicate by using Spark SQL functions. deltaTable.delete(functions.col("birthDate").lt(functions.lit("1955-01-01")));`} lang="java" />
 
   </TabItem>
 </Tabs>
 
 See the [Delta Lake APIs](delta-apidoc.html) for details.
 
-<Aside type="caution" title="Important">
+<Aside
+  type="caution"
+  title="Important"
+>
   `delete` removes the data from the latest version of the Delta table but does
   not remove it from the physical storage until the old versions are explicitly
   vacuumed. See [vacuum](delta-utility.html#-delta-vacuum) for details.
@@ -91,8 +90,7 @@ You can update data that matches a predicate in a Delta table. For example, in a
     <Code code={`UPDATE people10m SET gender = 'Female' WHERE gender = 'F';
 UPDATE people10m SET gender = 'Male' WHERE gender = 'M';
 
-UPDATE delta.\`/tmp/delta/people-10m\` SET gender = 'Female' WHERE gender = 'F';
-UPDATE delta.\`/tmp/delta/people-10m\` SET gender = 'Male' WHERE gender = 'M';`} lang="sql" />
+UPDATE delta.\`/tmp/delta/people-10m\` SET gender = 'Female' WHERE gender = 'F'; UPDATE delta.\`/tmp/delta/people-10m\` SET gender = 'Male' WHERE gender = 'M';`} lang="sql" />
 
   </TabItem>
 </Tabs>
@@ -108,17 +106,11 @@ deltaTable = DeltaTable.forPath(spark, '/tmp/delta/people-10m')
 
 # Declare the predicate by using a SQL-formatted string.
 
-deltaTable.update(
-condition = "gender = 'F'",
-set = { "gender": "'Female'" }
-)
+deltaTable.update( condition = "gender = 'F'", set = { "gender": "'Female'" } )
 
 # Declare the predicate by using Spark SQL functions.
 
-deltaTable.update(
-condition = col('gender') == 'M',
-set = { 'gender': lit('Male') }
-)`} lang="python" />
+deltaTable.update( condition = col('gender') == 'M', set = { 'gender': lit('Male') } )`} lang="python" />
 
   </TabItem>
 
@@ -127,18 +119,12 @@ set = { 'gender': lit('Male') }
 
 val deltaTable = DeltaTable.forPath(spark, "/tmp/delta/people-10m")
 
-// Declare the predicate by using a SQL-formatted string.
-deltaTable.updateExpr(
-"gender = 'F'",
-Map("gender" -> "'Female'")
+// Declare the predicate by using a SQL-formatted string. deltaTable.updateExpr( "gender = 'F'", Map("gender" -> "'Female'")
 
 import org.apache.spark.sql.functions._
 import spark.implicits._
 
-// Declare the predicate by using Spark SQL functions and implicits.
-deltaTable.update(
-col("gender") === "M",
-Map("gender" -> lit("Male")));`} lang="scala" />
+// Declare the predicate by using Spark SQL functions and implicits. deltaTable.update( col("gender") === "M", Map("gender" -> lit("Male")));`} lang="scala" />
 
   </TabItem>
 
@@ -149,21 +135,13 @@ import java.util.HashMap;
 
 DeltaTable deltaTable = DeltaTable.forPath(spark, "/data/events/");
 
-// Declare the predicate by using a SQL-formatted string.
-deltaTable.updateExpr(
-"gender = 'F'",
-new HashMap<String, String>() {{
+// Declare the predicate by using a SQL-formatted string. deltaTable.updateExpr( "gender = 'F'", new HashMap<String, String>() {{
     put("gender", "'Female'");
-  }}
-);
+  }} );
 
-// Declare the predicate by using Spark SQL functions.
-deltaTable.update(
-functions.col(gender).eq("M"),
-new HashMap<String, Column>() {{
+// Declare the predicate by using Spark SQL functions. deltaTable.update( functions.col(gender).eq("M"), new HashMap<String, Column>() {{
     put("gender", functions.lit("Male"));
-  }}
-);`} lang="java" />
+  }} );`} lang="java" />
 
   </TabItem>
 </Tabs>
@@ -229,41 +207,11 @@ See [Configure SparkSession](delta-batch.html#-sql-support) for the steps to ena
   <TabItem label="Python">
     <Code code={`from delta.tables import *
 
-deltaTablePeople = DeltaTable.forPath(spark, '/tmp/delta/people-10m')
-deltaTablePeopleUpdates = DeltaTable.forPath(spark, '/tmp/delta/people-10m-updates')
+deltaTablePeople = DeltaTable.forPath(spark, '/tmp/delta/people-10m') deltaTablePeopleUpdates = DeltaTable.forPath(spark, '/tmp/delta/people-10m-updates')
 
 dfUpdates = deltaTablePeopleUpdates.toDF()
 
-deltaTablePeople.alias('people') \\
-.merge(
-dfUpdates.alias('updates'),
-'people.id = updates.id'
-) \\
-.whenMatchedUpdate(set =
-{
-"id": "updates.id",
-"firstName": "updates.firstName",
-"middleName": "updates.middleName",
-"lastName": "updates.lastName",
-"gender": "updates.gender",
-"birthDate": "updates.birthDate",
-"ssn": "updates.ssn",
-"salary": "updates.salary"
-}
-) \\
-.whenNotMatchedInsert(values =
-{
-"id": "updates.id",
-"firstName": "updates.firstName",
-"middleName": "updates.middleName",
-"lastName": "updates.lastName",
-"gender": "updates.gender",
-"birthDate": "updates.birthDate",
-"ssn": "updates.ssn",
-"salary": "updates.salary"
-}
-) \\
-.execute()`} lang="python" />
+deltaTablePeople.alias('people') \\ .merge( dfUpdates.alias('updates'), 'people.id = updates.id' ) \\ .whenMatchedUpdate(set = { "id": "updates.id", "firstName": "updates.firstName", "middleName": "updates.middleName", "lastName": "updates.lastName", "gender": "updates.gender", "birthDate": "updates.birthDate", "ssn": "updates.ssn", "salary": "updates.salary" } ) \\ .whenNotMatchedInsert(values = { "id": "updates.id", "firstName": "updates.firstName", "middleName": "updates.middleName", "lastName": "updates.lastName", "gender": "updates.gender", "birthDate": "updates.birthDate", "ssn": "updates.ssn", "salary": "updates.salary" } ) \\ .execute()`} lang="python" />
 
   </TabItem>
 
@@ -271,40 +219,9 @@ dfUpdates.alias('updates'),
     <Code code={`import io.delta.tables._
 import org.apache.spark.sql.functions._
 
-val deltaTablePeople = DeltaTable.forPath(spark, "/tmp/delta/people-10m")
-val deltaTablePeopleUpdates = DeltaTable.forPath(spark, "tmp/delta/people-10m-updates")
-val dfUpdates = deltaTablePeopleUpdates.toDF()
+val deltaTablePeople = DeltaTable.forPath(spark, "/tmp/delta/people-10m") val deltaTablePeopleUpdates = DeltaTable.forPath(spark, "tmp/delta/people-10m-updates") val dfUpdates = deltaTablePeopleUpdates.toDF()
 
-deltaTablePeople
-.as("people")
-.merge(
-dfUpdates.as("updates"),
-"people.id = updates.id")
-.whenMatched
-.updateExpr(
-Map(
-"id" -> "updates.id",
-"firstName" -> "updates.firstName",
-"middleName" -> "updates.middleName",
-"lastName" -> "updates.lastName",
-"gender" -> "updates.gender",
-"birthDate" -> "updates.birthDate",
-"ssn" -> "updates.ssn",
-"salary" -> "updates.salary"
-))
-.whenNotMatched
-.insertExpr(
-Map(
-"id" -> "updates.id",
-"firstName" -> "updates.firstName",
-"middleName" -> "updates.middleName",
-"lastName" -> "updates.lastName",
-"gender" -> "updates.gender",
-"birthDate" -> "updates.birthDate",
-"ssn" -> "updates.ssn",
-"salary" -> "updates.salary"
-))
-.execute()`} lang="scala" />
+deltaTablePeople .as("people") .merge( dfUpdates.as("updates"), "people.id = updates.id") .whenMatched .updateExpr( Map( "id" -> "updates.id", "firstName" -> "updates.firstName", "middleName" -> "updates.middleName", "lastName" -> "updates.lastName", "gender" -> "updates.gender", "birthDate" -> "updates.birthDate", "ssn" -> "updates.ssn", "salary" -> "updates.salary" )) .whenNotMatched .insertExpr( Map( "id" -> "updates.id", "firstName" -> "updates.firstName", "middleName" -> "updates.middleName", "lastName" -> "updates.lastName", "gender" -> "updates.gender", "birthDate" -> "updates.birthDate", "ssn" -> "updates.ssn", "salary" -> "updates.salary" )) .execute()`} lang="scala" />
 
   </TabItem>
 
@@ -313,17 +230,9 @@ Map(
 import org.apache.spark.sql.functions;
 import java.util.HashMap;
 
-DeltaTable deltaTable = DeltaTable.forPath(spark, "/tmp/delta/people-10m")
-Dataset<Row> dfUpdates = spark.read("delta").load("/tmp/delta/people-10m-updates")
+DeltaTable deltaTable = DeltaTable.forPath(spark, "/tmp/delta/people-10m") Dataset<Row> dfUpdates = spark.read("delta").load("/tmp/delta/people-10m-updates")
 
-deltaTable
-.as("people")
-.merge(
-dfUpdates.as("updates"),
-"people.id = updates.id")
-.whenMatched()
-.updateExpr(
-new HashMap<String, String>() {{
+deltaTable .as("people") .merge( dfUpdates.as("updates"), "people.id = updates.id") .whenMatched() .updateExpr( new HashMap<String, String>() {{
       put("id", "updates.id");
       put("firstName", "updates.firstName");
       put("middleName", "updates.middleName");
@@ -332,10 +241,7 @@ new HashMap<String, String>() {{
       put("birthDate", "updates.birthDate");
       put("ssn", "updates.ssn");
       put("salary", "updates.salary");
-    }})
-.whenNotMatched()
-.insertExpr(
-new HashMap<String, String>() {{
+    }}) .whenNotMatched() .insertExpr( new HashMap<String, String>() {{
       put("id", "updates.id");
       put("firstName", "updates.firstName");
       put("middleName", "updates.middleName");
@@ -344,15 +250,17 @@ new HashMap<String, String>() {{
       put("birthDate", "updates.birthDate");
       put("ssn", "updates.ssn");
       put("salary", "updates.salary");
-    }})
-.execute();`} lang="java" />
+    }}) .execute();`} lang="java" />
 
   </TabItem>
 </Tabs>
 
 See the [Delta Lake APIs](delta-apidoc.html) for Scala, Java, and Python syntax details.
 
-<Aside type="caution" title="Important">
+<Aside
+  type="caution"
+  title="Important"
+>
   Delta Lake merge operations typically require two passes over the source data.
   If your source data contains nondeterministic expressions, multiple passes on
   the source data can produce different rows causing incorrect results. Some
@@ -463,14 +371,7 @@ The following example adds conditions to the `WHEN NOT MATCHED BY SOURCE` clause
     <TabItem label="SQL">
     	<Code code={`MERGE INTO target
 
-USING source
-ON source.key = target.key
-WHEN MATCHED THEN
-UPDATE SET target.lastSeen = source.timestamp
-WHEN NOT MATCHED THEN
-INSERT (key, lastSeen, status) VALUES (source.key, source.timestamp, 'active')
-WHEN NOT MATCHED BY SOURCE AND target.lastSeen >= (current_date() - INTERVAL '5' DAY) THEN
-UPDATE SET target.status = 'inactive'`} lang="sql" />
+USING source ON source.key = target.key WHEN MATCHED THEN UPDATE SET target.lastSeen = source.timestamp WHEN NOT MATCHED THEN INSERT (key, lastSeen, status) VALUES (source.key, source.timestamp, 'active') WHEN NOT MATCHED BY SOURCE AND target.lastSeen >= (current_date() - INTERVAL '5' DAY) THEN UPDATE SET target.status = 'inactive'`} lang="sql" />
 
 </TabItem>
 
@@ -563,12 +464,12 @@ Schema evolution allows users to resolve schema mismatches between the target an
 
 Here are a few examples of the effects of `merge` operation with and without schema evolution.
 
-| Columns                                              | Query (in SQL)                                                                                                                                  | Behavior without schema evolution (default)                                                              | Behavior with schema evolution                                                                                                                                                                                                                                            |
-| :--------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Target: `key, value` Source: `key, value, new_value` | `sql MERGE INTO target_table t USING source_table s ON t.key = s.key WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *`             | The table schema remains unchanged; only columns `key`, `value` are updated/inserted.                    | The table schema is changed to `(key, value, new_value)`. Existing records with matches are updated with the `value` and `new_value` in the source. New rows are inserted with the schema `(key, value, new_value)`.                                                      |
-| Target: `key, old_value` Source: `key, new_value`    | `sql MERGE INTO target_table t USING source_table s ON t.key = s.key WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *`             | `UPDATE` and `INSERT` actions throw an error because the target column `old_value` is not in the source. | The table schema is changed to `(key, old_value, new_value)`. Existing records with matches are updated with the `new_value` in the source leaving `old_value` unchanged. New records are inserted with the specified `key`, `new_value`, and `NULL` for the `old_value`. |
-| Target: `key, old_value` Source: `key, new_value`    | `sql MERGE INTO target_table t USING source_table s ON t.key = s.key WHEN MATCHED THEN UPDATE SET new_value = s.new_value`                      | `UPDATE` throws an error because column `new_value` does not exist in the target table.                  | The table schema is changed to `(key, old_value, new_value)`. Existing records with matches are updated with the `new_value` in the source leaving `old_value` unchanged, and unmatched records have `NULL` entered for `new_value`.                                      |
-| Target: `key, old_value` Source: `key, new_value`    | `sql MERGE INTO target_table t USING source_table s ON t.key = s.key WHEN NOT MATCHED THEN INSERT (key, new_value) VALUES (s.key, s.new_value)` | `INSERT`throws an error because column`new_value`does not exist in the target table.                     | The table schema is changed to`(key, old_value, new_value)`. New records are inserted with the specified `key`, `new_value`, and `NULL`for the`old_value`. Existing records have `NULL`entered for`new_value`leaving`old_value` unchanged. See note (1).                  |
+| Columns | Query (in SQL) | Behavior without schema evolution (default) | Behavior with schema evolution |
+| :-- | :-- | :-- | :-- |
+| Target: `key, value` Source: `key, value, new_value` | `sql MERGE INTO target_table t USING source_table s ON t.key = s.key WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *` | The table schema remains unchanged; only columns `key`, `value` are updated/inserted. | The table schema is changed to `(key, value, new_value)`. Existing records with matches are updated with the `value` and `new_value` in the source. New rows are inserted with the schema `(key, value, new_value)`. |
+| Target: `key, old_value` Source: `key, new_value` | `sql MERGE INTO target_table t USING source_table s ON t.key = s.key WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *` | `UPDATE` and `INSERT` actions throw an error because the target column `old_value` is not in the source. | The table schema is changed to `(key, old_value, new_value)`. Existing records with matches are updated with the `new_value` in the source leaving `old_value` unchanged. New records are inserted with the specified `key`, `new_value`, and `NULL` for the `old_value`. |
+| Target: `key, old_value` Source: `key, new_value` | `sql MERGE INTO target_table t USING source_table s ON t.key = s.key WHEN MATCHED THEN UPDATE SET new_value = s.new_value` | `UPDATE` throws an error because column `new_value` does not exist in the target table. | The table schema is changed to `(key, old_value, new_value)`. Existing records with matches are updated with the `new_value` in the source leaving `old_value` unchanged, and unmatched records have `NULL` entered for `new_value`. |
+| Target: `key, old_value` Source: `key, new_value` | `sql MERGE INTO target_table t USING source_table s ON t.key = s.key WHEN NOT MATCHED THEN INSERT (key, new_value) VALUES (s.key, s.new_value)` | `INSERT`throws an error because column`new_value`does not exist in the target table. | The table schema is changed to`(key, old_value, new_value)`. New records are inserted with the specified `key`, `new_value`, and `NULL`for the`old_value`. Existing records have `NULL`entered for`new_value`leaving`old_value` unchanged. See note (1). |
 
 ## Special considerations for schemas that contain arrays of structs
 
@@ -580,11 +481,11 @@ Delta `MERGE INTO` supports resolving struct fields by name and evolving schemas
 
 Here are a few examples of the effects of merge operations with and without schema evolution for arrays of structs.
 
-| Source schema                                                               | Target schema                                                    | Behavior without schema evolution (default)                                                   | Behavior with schema evolution                                                                                                                                                                                                                                                         |
-| :-------------------------------------------------------------------------- | :--------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| array&lt;struct&lt;b: string, a: string&gt;&gt;                             | array&lt;struct&lt;a: int, b: int&gt;&gt;                        | The table schema remains unchanged. Columns will be resolved by name and updated or inserted. | The table schema remains unchanged. Columns will be resolved by name and updated or inserted.                                                                                                                                                                                          |
-| array&lt;struct&lt;a: int, c: string, d: string&gt;&gt;                     | array&lt;struct&lt;a: string, b: string&gt;&gt;                  | `update` and `insert` throw errors because `c` and `d` do not exist in the target table.      | The table schema is changed to array&lt;struct&lt;a: string, b: string, c: string, d: string&gt;&gt;. `c` and `d` are inserted as `NULL` for existing entries in the target table. `update` and `insert` fill entries in the source table with `a` casted to string and `b` as `NULL`. |
-| array&lt;struct&lt;a: string, b: struct&lt;c: string, d: string&gt;&gt;&gt; | array&lt;struct&lt;a: string, b: struct&lt;c: string&gt;&gt;&gt; | `update` and `insert` throw errors because `d` does not exist in the target table.            | The target table schema is changed to array&lt;struct&lt;a: string, b: struct&lt;c: string, d: string&gt;&gt;&gt;. `d` is inserted as `NULL` for existing entries in the target table.                                                                                                 |
+| Source schema | Target schema | Behavior without schema evolution (default) | Behavior with schema evolution |
+| :-- | :-- | :-- | :-- |
+| array&lt;struct&lt;b: string, a: string&gt;&gt; | array&lt;struct&lt;a: int, b: int&gt;&gt; | The table schema remains unchanged. Columns will be resolved by name and updated or inserted. | The table schema remains unchanged. Columns will be resolved by name and updated or inserted. |
+| array&lt;struct&lt;a: int, c: string, d: string&gt;&gt; | array&lt;struct&lt;a: string, b: string&gt;&gt; | `update` and `insert` throw errors because `c` and `d` do not exist in the target table. | The table schema is changed to array&lt;struct&lt;a: string, b: string, c: string, d: string&gt;&gt;. `c` and `d` are inserted as `NULL` for existing entries in the target table. `update` and `insert` fill entries in the source table with `a` casted to string and `b` as `NULL`. |
+| array&lt;struct&lt;a: string, b: struct&lt;c: string, d: string&gt;&gt;&gt; | array&lt;struct&lt;a: string, b: struct&lt;c: string&gt;&gt;&gt; | `update` and `insert` throw errors because `d` does not exist in the target table. | The target table schema is changed to array&lt;struct&lt;a: string, b: struct&lt;c: string, d: string&gt;&gt;&gt;. `d` is inserted as `NULL` for existing entries in the target table. |
 
 ### Performance tuning
 
@@ -713,8 +614,7 @@ WHEN NOT MATCHED AND newDedupedLogs.date > current_date() - INTERVAL 7 DAYS
   </TabItem>
 </Tabs>
 
-This is more efficient than the previous command as it looks for duplicates only in the
-last 7 days of logs, not the entire table. Furthermore, you can use this insert-only merge with Structured Streaming to perform continuous deduplication of the logs.
+This is more efficient than the previous command as it looks for duplicates only in the last 7 days of logs, not the entire table. Furthermore, you can use this insert-only merge with Structured Streaming to perform continuous deduplication of the logs.
 
 - In a streaming query, you can use merge operation in `foreachBatch` to continuously write any streaming data to a Delta table with deduplication. See the following [streaming example](#upsert-from-streaming-queries-using-foreachbatch) for more information on `foreachBatch`.
 - In another streaming query, you can continuously read deduplicated data from this Delta table. This is possible because an insert-only merge only appends new data to the Delta table.
@@ -731,11 +631,7 @@ Here is a concrete example of maintaining the history of addresses for a custome
 
 val updatesDF: DataFrame = ... // DataFrame with schema (customerId, address, effectiveDate)
 
-// Rows to INSERT new addresses of existing customers
-val newAddressesToInsert = updatesDF
-.as("updates")
-.join(customersTable.toDF.as("customers"), "customerid")
-.where("customers.current = true AND updates.address <> customers.address")`} lang="scala" />
+// Rows to INSERT new addresses of existing customers val newAddressesToInsert = updatesDF .as("updates") .join(customersTable.toDF.as("customers"), "customerid") .where("customers.current = true AND updates.address <> customers.address")`} lang="scala" />
 
   </TabItem>
 
@@ -757,80 +653,30 @@ stagedUpdates = (
 
 # New rows to insert into customer table (for existing customers with new addresses)
 
-updatesDF.alias("updates")
-.join(customersTable.toDF().alias("customers"), "customerid")
-.where("customers.current = true AND updates.address <> customers.address")
-.selectExpr("NULL as mergeKey", "updates._")
-).unionByName( # Rows to update (the latest addresses of existing customers)
-updatesDF.alias("updates")
-.join(customersTable.toDF().alias("customers"), "customerid")
-.where("customers.current = true AND updates.address <> customers.address")
-.selectExpr("customers.customerid as mergeKey", "updates._")
-)
+updatesDF.alias("updates") .join(customersTable.toDF().alias("customers"), "customerid") .where("customers.current = true AND updates.address <> customers.address") .selectExpr("NULL as mergeKey", "updates._") ).unionByName( # Rows to update (the latest addresses of existing customers) updatesDF.alias("updates") .join(customersTable.toDF().alias("customers"), "customerid") .where("customers.current = true AND updates.address <> customers.address") .selectExpr("customers.customerid as mergeKey", "updates._") )
 
 # Apply SCD Type 2 operation using merge
 
-customersTable.alias("customers").merge(
-stagedUpdates.alias("staged_updates"),
-"customers.customerid = mergeKey")
+customersTable.alias("customers").merge( stagedUpdates.alias("staged_updates"), "customers.customerid = mergeKey")
 
-.whenMatchedUpdate(
-condition = "customers.current = true AND customers.address <> staged_updates.address",
-set = { # Set current to false and endDate to source's effective date.
-"current": "false",
-"endDate": "staged_updates.effectiveDate"
-}
-).whenNotMatchedInsert(
-values = {
-"customerid": "staged_updates.customerId",
-"address": "staged_updates.address",
-"current": "true",
-"effectiveDate": "staged_updates.effectiveDate", # Set current to true along with the new address and its effective date.
-"endDate": "null"
-}
-).execute()`} lang="python" />
+.whenMatchedUpdate( condition = "customers.current = true AND customers.address <> staged_updates.address", set = { # Set current to false and endDate to source's effective date. "current": "false", "endDate": "staged_updates.effectiveDate" } ).whenNotMatchedInsert( values = { "customerid": "staged_updates.customerId", "address": "staged_updates.address", "current": "true", "effectiveDate": "staged_updates.effectiveDate", # Set current to true along with the new address and its effective date. "endDate": "null" } ).execute()`} lang="python" />
 
   </TabItem>
 </Tabs>
 
 ### Write change data into a Delta table
 
-Similar to SCD, another common use case, often called change data capture (CDC), is to apply
-all data changes generated from an external database into a Delta table. In other words, a set
-of updates, deletes, and inserts applied to an external table needs to be applied to a Delta table.
-You can do this using `merge` as follows.
+Similar to SCD, another common use case, often called change data capture (CDC), is to apply all data changes generated from an external database into a Delta table. In other words, a set of updates, deletes, and inserts applied to an external table needs to be applied to a Delta table. You can do this using `merge` as follows.
 
 <Tabs>
   <TabItem label="Scala">
     <Code code={`val deltaTable: DeltaTable = ... // DeltaTable with schema (key, value)
 
-// DataFrame with changes having following columns
-// - key: key of the change
-// - time: time of change for ordering between changes (can replaced by other ordering id)
-// - newValue: updated or inserted value if key was not deleted
-// - deleted: true if the key was deleted, false if the key was inserted or updated
-val changesDF: DataFrame = ...
+// DataFrame with changes having following columns // - key: key of the change // - time: time of change for ordering between changes (can replaced by other ordering id) // - newValue: updated or inserted value if key was not deleted // - deleted: true if the key was deleted, false if the key was inserted or updated val changesDF: DataFrame = ...
 
-// Find the latest change for each key based on the timestamp
-// Note: For nested structs, max on struct is computed as
-// max on first struct field, if equal fall back to second fields, and so on.
-val latestChangeForEachKey = changesDF
-.selectExpr("key", "struct(time, newValue, deleted) as otherCols" )
-.groupBy("key")
-.agg(max("otherCols").as("latest"))
-.selectExpr("key", "latest.\*")
+// Find the latest change for each key based on the timestamp // Note: For nested structs, max on struct is computed as // max on first struct field, if equal fall back to second fields, and so on. val latestChangeForEachKey = changesDF .selectExpr("key", "struct(time, newValue, deleted) as otherCols" ) .groupBy("key") .agg(max("otherCols").as("latest")) .selectExpr("key", "latest.\*")
 
-deltaTable.as("t")
-.merge(
-latestChangeForEachKey.as("s"),
-"s.key = t.key")
-.whenMatched("s.deleted = true")
-.delete()
-.whenMatched()
-.updateExpr(Map("value" -> "s.newValue"))
-.whenNotMatched("s.deleted = false")
-.insertExpr(Map("key" -> "s.key", "value" -> "s.newValue"))
-.execute()`} lang="scala" />
+deltaTable.as("t") .merge( latestChangeForEachKey.as("s"), "s.key = t.key") .whenMatched("s.deleted = true") .delete() .whenMatched() .updateExpr(Map("value" -> "s.newValue")) .whenNotMatched("s.deleted = false") .insertExpr(Map("key" -> "s.key", "value" -> "s.newValue")) .execute()`} lang="scala" />
 
   </TabItem>
 
@@ -863,18 +709,10 @@ latestChangeForEachKey = changesDF \
  .selectExpr("key", "latest.\*")
 
 deltaTable.alias("t") \
- .merge(
-latestChangeForEachKey.alias("s"),
-"s.key = t.key") \
+ .merge( latestChangeForEachKey.alias("s"), "s.key = t.key") \
  .whenMatchedDelete("s.deleted = true") \
  .whenMatchedUpdateExpr({"value": "s.newValue"}) \
- .whenNotMatchedInsertExpr(
-condition = "s.deleted = false",
-values = {
-"key": "s.key",
-"value": "s.newValue"
-}
-) \
+ .whenNotMatchedInsertExpr( condition = "s.deleted = false", values = { "key": "s.key", "value": "s.newValue" } ) \
  .execute()`} lang="python" />
 
   </TabItem>
@@ -892,22 +730,9 @@ You can use a combination of `merge` and `foreachBatch` (see [foreachbatch](http
 
 val deltaTable = DeltaTable.forPath(spark, "/data/aggregates")
 
-def upsertToDelta(microBatchOutputDF: DataFrame, batchId: Long) {
-deltaTable.as("t")
-.merge(
-microBatchOutputDF.as("s"),
-"s.key = t.key")
-.whenMatched().updateAll()
-.whenNotMatched().insertAll()
-.execute()
-}
+def upsertToDelta(microBatchOutputDF: DataFrame, batchId: Long) { deltaTable.as("t") .merge( microBatchOutputDF.as("s"), "s.key = t.key") .whenMatched().updateAll() .whenNotMatched().insertAll() .execute() }
 
-// Write the output of a streaming aggregation query into Delta table
-streamingAggregatesDF.writeStream
-.format("delta")
-.foreachBatch(upsertToDelta \_)
-.outputMode("update")
-.start()`} lang="scala" />
+// Write the output of a streaming aggregation query into Delta table streamingAggregatesDF.writeStream .format("delta") .foreachBatch(upsertToDelta \_) .outputMode("update") .start()`} lang="scala" />
 
   </TabItem>
 
@@ -918,21 +743,11 @@ deltaTable = DeltaTable.forPath(spark, "/data/aggregates")
 
 # Function to upsert microBatchOutputDF into Delta table using merge
 
-def upsertToDelta(microBatchOutputDF, batchId):
-deltaTable.alias("t").merge(
-microBatchOutputDF.alias("s"),
-"s.key = t.key") \\
-.whenMatchedUpdateAll() \\
-.whenNotMatchedInsertAll() \\
-.execute()
+def upsertToDelta(microBatchOutputDF, batchId): deltaTable.alias("t").merge( microBatchOutputDF.alias("s"), "s.key = t.key") \\ .whenMatchedUpdateAll() \\ .whenNotMatchedInsertAll() \\ .execute()
 
 # Write the output of a streaming aggregation query into Delta table
 
-streamingAggregatesDF.writeStream \\
-.format("delta") \\
-.foreachBatch(upsertToDelta) \\
-.outputMode("update") \\
-.start()`} lang="python" />
+streamingAggregatesDF.writeStream \\ .format("delta") \\ .foreachBatch(upsertToDelta) \\ .outputMode("update") \\ .start()`} lang="python" />
 
   </TabItem>
 </Tabs>

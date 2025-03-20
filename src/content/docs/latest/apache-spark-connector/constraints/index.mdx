@@ -10,7 +10,10 @@ import { Code } from "@astrojs/starlight/components";
 
 Delta tables support standard SQL constraint management clauses that ensure that the quality and integrity of data added to a table is automatically verified. When a constraint is violated, Delta Lake throws an `InvariantViolationException` to signal that the new data can't be added.
 
-<Aside type="caution" title="Important">
+<Aside
+  type="caution"
+  title="Important"
+>
   Adding a constraint automatically upgrades the table writer protocol version.
   See [How does Delta Lake manage feature
   compatibility?](/latest/feature-compatibility/) to understand table protocol

@@ -16,8 +16,7 @@ When you load a Delta table as a stream source and use it in a streaming query, 
     <Code code={`spark.readStream.format("delta") \\
   .load("/tmp/delta/events")
 
-from delta.tables import \*
-spark.readStream.delta("/tmp/delta/events")`} lang="python" />
+from delta.tables import \* spark.readStream.delta("/tmp/delta/events")`} lang="python" />
 
   </TabItem>
 
@@ -209,13 +208,7 @@ The option `schemaTrackingLocation` is used to specify the path for schema track
 	<TabItem label="Python">
 		<Code code={`checkpoint_path = "/path/to/checkpointLocation"
 
-(spark.readStream
-.option("schemaTrackingLocation", checkpoint_path)
-.table("delta_source_table")
-.writeStream
-.option("checkpointLocation", checkpoint_path)
-.toTable("output_table")
-)`} lang="python" />
+(spark.readStream .option("schemaTrackingLocation", checkpoint_path) .table("delta_source_table") .writeStream .option("checkpointLocation", checkpoint_path) .toTable("output_table") )`} lang="python" />
 
 </TabItem>
 
@@ -345,9 +338,7 @@ The same `DataFrameWriter` options can be used to achieve the idempotent writes 
   <TabItem label="Python">
     <Code code={`app_id = ... # A unique string that is used as an application ID.
 
-def writeToDeltaLakeTableIdempotent(batch_df, batch_id):
-batch_df.write.format(...).option("txnVersion", batch_id).option("txnAppId", app_id).save(...) # location 1
-batch_df.write.format(...).option("txnVersion", batch_id).option("txnAppId", app_id).save(...) # location 2`} lang="python" />
+def writeToDeltaLakeTableIdempotent(batch_df, batch_id): batch_df.write.format(...).option("txnVersion", batch_id).option("txnAppId", app_id).save(...) # location 1 batch_df.write.format(...).option("txnVersion", batch_id).option("txnAppId", app_id).save(...) # location 2`} lang="python" />
 
   </TabItem>
 

@@ -37,12 +37,12 @@ where `<scheme>` is the scheme of the paths of your storage system. This configu
 
 Delta Lake supports reads and writes to S3 in two different modes: Single-cluster and Multi-cluster.
 
-|               | Single-cluster                                          | Multi-cluster                                    |
-| ------------- | ------------------------------------------------------- | ------------------------------------------------ |
-| Configuration | Comes with Delta Lake out-of-the-box                    | Is experimental and requires extra configuration |
-| Reads         | Supports concurrent reads from multiple clusters        | Supports concurrent reads from multiple clusters |
-| Writes        | Supports concurrent writes from a _single_ Spark driver | Supports multi-cluster writes                    |
-| Permissions   | S3 credentials                                          | S3 and DynamoDB operating permissions            |
+|  | Single-cluster | Multi-cluster |
+| --- | --- | --- |
+| Configuration | Comes with Delta Lake out-of-the-box | Is experimental and requires extra configuration |
+| Reads | Supports concurrent reads from multiple clusters | Supports concurrent reads from multiple clusters |
+| Writes | Supports concurrent writes from a _single_ Spark driver | Supports multi-cluster writes |
+| Permissions | S3 credentials | S3 and DynamoDB operating permissions |
 
 ### Single-cluster setup (default)
 

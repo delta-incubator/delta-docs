@@ -7,8 +7,7 @@ import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
 
 ## Choose the right partition column
 
-You can partition a Delta table by a column. The most commonly used partition column is `date`.
-Follow these two rules of thumb for deciding on what column to partition by:
+You can partition a Delta table by a column. The most commonly used partition column is `date`. Follow these two rules of thumb for deciding on what column to partition by:
 
 - If the cardinality of a column will be very high, do not use that column for partitioning. For example, if you partition by a column `userId` and if there can be 1M distinct user IDs, then that is a bad partitioning strategy.
 - Amount of data in each partition: You can partition by a column if you expect data in that partition to be at least 1 GB.
