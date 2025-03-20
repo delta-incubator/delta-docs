@@ -6,6 +6,7 @@ description: "Learn how to use a Delta table as a source for streaming queries."
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 import { Code } from "@astrojs/starlight/components";
 import { Aside } from "@astrojs/starlight/components";
+import { Image } from 'astro:assets';
 
 ## Delta table as a source
 
@@ -150,7 +151,7 @@ With event time order enabled, the event time range of initial snapshot data is 
 
 The graphic below shows this process:
 
-![Initial Snapshot](./delta-initial-snapshot-data-drop.png)
+<Image src={import('./delta-initial-snapshot-data-drop.png')} alt="Initial Snapshot" />
 
 Notable information about this feature:
 

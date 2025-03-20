@@ -4,6 +4,7 @@ description: Learn about Delta Lake optimizations that accelerate data lake oper
 ---
 
 import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
+import { Image } from 'astro:assets';
 
 ## Optimize performance with file management
 
@@ -211,7 +212,7 @@ Optimized writes are most effective for partitioned tables, as they reduce the n
 
 The following image demonstrates how optimized writes works:
 
-![Optimized writes](./optimized-writes.png)
+<Image src={import('./optimized-writes.png')} alt="Optimized writes" />
 
 <Aside type="note">
   You might have code that runs coalesce(n) or repartition(n) just before you
