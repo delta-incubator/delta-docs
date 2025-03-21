@@ -8,6 +8,15 @@ import { Code } from "@astrojs/starlight/components";
 import { Aside } from "@astrojs/starlight/components";
 import { Image } from 'astro:assets';
 
+Delta Lake is deeply integrated with [Spark Structured Streaming](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html) through `readStream` and `writeStream`. Delta Lake overcomes many of the limitations typically associated with streaming systems and files, including:
+
+- Maintaining "exactly-once" processing with more than one stream (or concurrent batch jobs)
+
+- Efficiently discovering which files are new when using files as the source for a stream
+
+For many Delta Lake operations on tables, you enable integration with Apache Spark DataSourceV2 and Catalog APIs (since 3.0) by setting configurations when you create a new `SparkSession`. See [Configure SparkSession](/latest/apache-spark-connector/table-batch-reads-and-writes/#configure-sparksession).
+
+
 ## Delta table as a source
 
 When you load a Delta table as a stream source and use it in a streaming query, the query processes all of the data present in the table as well as any new data that arrives after the stream is started.
@@ -41,7 +50,7 @@ If you use `maxBytesPerTrigger` in conjunction with `maxFilesPerTrigger`, the mi
 
 <Aside type="note">
   In cases when the source table transactions are cleaned up due to the
-  `logRetentionDuration` [configuration](delta-batch.html#-data-retention) and
+  `logRetentionDuration` [configuration](/latest/apache-spark-connector/table-batch-reads-and-writes/#data-retention) and
   the stream lags in processing, Delta Lake processes the data corresponding to
   the latest available transaction history of the source table but does not fail
   the stream. This can result in data being dropped.
@@ -92,7 +101,7 @@ If you update a `user_email` with the `UPDATE` statement, the file containing th
 
 You can use the following options to specify the starting point of the Delta Lake streaming source without processing the entire table.
 
-- `startingVersion`: The Delta Lake version to start from. All table changes starting from this version (inclusive) will be read by the streaming source. You can obtain the commit versions from the `version` column of the [DESCRIBE HISTORY](delta-utility.html#-delta-history) command output.
+- `startingVersion`: The Delta Lake version to start from. All table changes starting from this version (inclusive) will be read by the streaming source. You can obtain the commit versions from the `version` column of the [DESCRIBE HISTORY](/latest/apache-spark-connector/table-utility-commands/#retrieve-delta-table-history) command output.
 - To return only the latest changes, specify `latest`.
 - `startingTimestamp`: The timestamp to start from. All table changes committed at or after the timestamp (inclusive) will be read by the streaming source. One of:
   - A timestamp string. For example, `"2019-01-01T00:00:00.000Z"`.
@@ -331,7 +340,7 @@ If a batch write is interrupted with a failure, rerunning the batch uses the sam
   and the batch ID would start from 0.
 </Aside>
 
-The same `DataFrameWriter` options can be used to achieve the idempotent writes in non-Streaming job. For details [Idempotent writes](delta-batch.html#-idempotent-writes).
+The same `DataFrameWriter` options can be used to achieve the idempotent writes in non-Streaming job. For details [Idempotent writes](/latest/apache-spark-connector/table-batch-reads-and-writes/#idempotent-writes).
 
 ### Example
 

@@ -630,27 +630,167 @@ The DataFrame returned automatically reads the most recent snapshot of the table
 
 ## Query an older snapshot of a table (time travel)
 
-Delta Lake supports time travel to query older snapshots of tables.
+Delta Lake time travel allows you to query an older snapshot of a Delta table. Time travel has many use cases, including:
+
+- Re-creating analyses, reports, or outputs (for example, the output of a machine learning model). This could be useful for debugging or auditing, especially in regulated industries.
+
+- Writing complex temporal queries. 
+
+- Fixing mistakes in your data.
+
+- Providing snapshot isolation for a set of queries for fast changing tables.
+
+This section describes the supported methods for querying older versions of tables, data retention concerns, and provides examples.
+
+<Aside type="note">
+The timestamp of each version N depends on the timestamp of the log file corresponding to the version N in Delta table log. Hence, time travel by timestamp can break if you copy the entire Delta table directory to a new location. Time travel by version will be unaffected.
+</Aside>
 
 ### Syntax
 
-```sql
-SELECT * FROM delta.`/path/to/table`
-```
+This section shows how to query an older version of a Delta table.
 
-### Examples
+#### SQL `AS OF` syntax
 
 ```sql
-SELECT * FROM delta.`/path/to/table`
+SELECT * FROM table_name TIMESTAMP AS OF timestamp_expression
+SELECT * FROM table_name VERSION AS OF version
 ```
+
+* `timestamp_expression` can be any one of:
+  * `'2018-10-18T22:15:12.013Z'`, that is, a string that can be cast to a timestamp
+  * `cast('2018-10-18 13:36:32 CEST' as timestamp)`
+  * `'2018-10-18'`, that is, a date string
+  * `current_timestamp() - interval 12 hours`
+  * `date_sub(current_date(), 1)`
+  * Any other expression that is or can be cast to a timestamp
+
+* `version` is a long value that can be obtained from the output of `DESCRIBE HISTORY table_spec`.
+
+Neither `timestamp_expression` nor `version` can be subqueries.
+
+### Example
+
+```sql
+SELECT * FROM default.people10m TIMESTAMP AS OF '2018-10-18T22:15:12.013Z'
+SELECT * FROM delta.`/tmp/delta/people10m` VERSION AS OF 123
+```
+
+#### DataFrameReader options
+
+DataFrameReader options allow you to create a DataFrame from a Delta table that is fixed to a specific version of the table.
+
+```python
+df1 = spark.read.format("delta").option("timestampAsOf", timestamp_string).load("/tmp/delta/people10m")
+df2 = spark.read.format("delta").option("versionAsOf", version).load("/tmp/delta/people10m")
+```
+
+For `timestamp_string`, only date or timestamp strings are accepted. For example, `"2019-01-01"` and `"2019-01-01T00:00:00.000Z"`.
+
+A common pattern is to use the latest state of the Delta table throughout the execution of a job to update downstream applications.
+
+Because Delta tables auto update, a DataFrame loaded from a Delta table may return different results across invocations if the underlying data is updated. By using time travel, you can fix the data returned by the DataFrame across invocations:
+
+```python
+history = spark.sql("DESCRIBE HISTORY delta.`/tmp/delta/people10m`")
+latest_version = history.selectExpr("max(version)").collect()
+df = spark.read.format("delta").option("versionAsOf", latest_version[0][0]).load("/tmp/delta/people10m")
+```
+
+#### Examples
+
+<Tabs>
+  <TabItem label="Fix accidental deletes">
+    ```python
+    yesterday = spark.sql("SELECT CAST(date_sub(current_date(), 1) AS STRING)").collect()[0][0]
+    df = spark.read.format("delta").option("timestampAsOf", yesterday).load("/tmp/delta/events")
+    df.where("userId = 111").write.format("delta").mode("append").save("/tmp/delta/events")
+    ```
+  </TabItem>
+  <TabItem label="Fix incorrect updates">
+    ```python
+    yesterday = spark.sql("SELECT CAST(date_sub(current_date(), 1) AS STRING)").collect()[0][0]
+    df = spark.read.format("delta").option("timestampAsOf", yesterday).load("/tmp/delta/events")
+    df.createOrReplaceTempView("my_table_yesterday")
+    spark.sql('''
+    MERGE INTO delta.`/tmp/delta/events` target
+      USING my_table_yesterday source
+      ON source.userId = target.userId
+      WHEN MATCHED THEN UPDATE SET *
+    ''')
+    ```
+  </TabItem>
+  <TabItem label="Query new customers">
+    ```python
+    last_week = spark.sql("SELECT CAST(date_sub(current_date(), 7) AS STRING)").collect()[0][0]
+    df = spark.read.format("delta").option("timestampAsOf", last_week).load("/tmp/delta/events")
+    last_week_count = df.select("userId").distinct().count()
+    count = spark.read.format("delta").load("/tmp/delta/events").select("userId").distinct().count()
+    new_customers_count = count - last_week_count
+    ```
+  </TabItem>
+</Tabs>
 
 ### Data retention
 
-Delta Lake automatically retains data for a configurable period of time.
+To time travel to a previous version, you must retain *both* the log and the data files for that version.
+
+The data files backing a Delta table are *never* deleted automatically; data files are deleted only when you run [VACUUM](/latest/apache-spark-connector/table-utility-commands/#vacuum). `VACUUM` *does not* delete Delta log files; log files are automatically cleaned up after checkpoints are written.
+
+By default you can time travel to a Delta table up to 30 days old unless you have:
+
+- Run `VACUUM` on your Delta table.
+- Changed the data or log file retention periods using the following [table properties](/latest/delta-table-properties-reference/):
+  - `delta.logRetentionDuration = "interval <interval>"`: controls how long the history for a table is kept. The default is `interval 30 days`.
+
+Each time a checkpoint is written, Delta automatically cleans up log entries older than the retention interval. If you set this config to a large enough value, many log entries are retained. This should not impact performance as operations against the log are constant time. Operations on history are parallel but will become more expensive as the log size increases.
+
+- `delta.deletedFileRetentionDuration = "interval <interval>"`: controls how long ago a file must have been deleted *before being a candidate for* `VACUUM`. The default is `interval 7 days`.
+
+  To access 30 days of historical data even if you run `VACUUM` on the Delta table, set `delta.deletedFileRetentionDuration = "interval 30 days"`. This setting may cause your storage costs to go up.
+
+<Aside type="note">
+Due to log entry cleanup, instances can arise where you cannot time travel to a version that is less than the retention interval. Delta Lake requires all consecutive log entries since the previous checkpoint to time travel to a particular version. For example, with a table initially consisting of log entries for versions [0, 19] and a checkpoint at verison 10, if the log entry for version 0 is cleaned up, then you cannot time travel to versions [1, 9]. Increasing the table property `delta.logRetentionDuration` can help avoid these situations.
+</Aside>
 
 ### In-Commit Timestamps
 
-Delta Lake supports querying data based on in-commit timestamps.
+#### Overview
+
+Delta Lake 3.3 introduced [In-Commit Timestamps](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#in-commit-timestamps) to provide a more reliable and consistent way to track table modification timestamps. These modification timestamps are needed for various usecases e.g. time-travel to a specific time in the past. This feature addresses limitations of the traditional approach that relied on file modification timestamps, particularly in scenarios involving data migration or replication.
+
+#### Feature Details
+
+In-Commit Timestamps stores modification timestamps within the commit itself, ensuring they remain unchanged regardless of file system operations. This provides several benefits:
+
+- **Immutable History**: Timestamps become part of the table's permanent commit history
+- **Consistent Time Travel**: Queries using timestamp-based time travel produce reliable results even after table migration
+
+Without the In-Commit Timestamp feature, Delta Lake uses file modification timestamps as the commit timestamp. This approach has various limitations:
+
+1. Data Migration Issues: When tables were moved between storage locations, file modification timestamps would change, potentially disrupting historical tracking
+2. Replication Scenarios: Timestamp inconsistencies could arise when replicating data across different environments
+3. Time Travel Reliability: These timestamp changes could affect the accuracy and consistency of time travel queries
+
+#### Enabling the Feature
+
+This is a [writer table feature](/latest/apache-spark-connector/versioning/#-what-are-table-features) and can be enabled by setting the table property `delta.enableInCommitTimestamps` to `true`:
+
+<Tabs>
+  <TabItem label="SQL">
+    ```sql
+    ALTER TABLE <table_name>
+    SET TBLPROPERTIES ('delta.enableInCommitTimestamps' = 'true');
+    ```
+  </TabItem>
+</Tabs>
+
+After enabling In-Commit Timestamps:
+
+- Only new write operations will include the embedded timestamps
+- File modification timestamps will continued to be used for historical commits performed before enablement
+
+See the [Versioning](/latest/apache-spark-connector/versioning) section for more details around compatibility.
 
 ## Write to table
 
@@ -801,7 +941,7 @@ In Delta Lake 1.1.0 and above, if you want to fall back to the old behavior, you
   </TabItem>
 </Tabs>
 
-### Dynamic Partition Overwrites
+#### Dynamic Partition Overwrites
 
 Delta Lake 2.0 and above supports *dynamic* partition overwrite mode for partitioned tables.
 
@@ -898,7 +1038,7 @@ You can also configure idempotent writes by setting the Spark session configurat
   This solution assumes that the data being written to Delta table(s) in multiple retries of the job is same. If a write attempt in a Delta table succeeds but due to some downstream failure there is a second write attempt with same txn options but different data, then that second write attempt will be ignored. This can cause unexpected results.
 </Aside>
 
-### Example
+#### Example
 
 <Tabs>
   <TabItem label="Python" active>
@@ -982,11 +1122,11 @@ You can make these changes explicitly using DDL or implicitly using DML.
 When you update a Delta table schema, streams that read from that table terminate. If you want the stream to continue you must restart it.
 </Aside>
 
-## Explicitly update schema
+### Explicitly update schema
 
 You can use the following DDL to explicitly change the schema of a table.
 
-### Add columns
+#### Add columns
 
 ```sql
 ALTER TABLE table_name ADD COLUMNS (col_name data_type [COMMENT col_comment] [FIRST|AFTER colA_name], ...)
@@ -1027,7 +1167,7 @@ the schema after is:
 Adding nested columns is supported only for structs. Arrays and maps are not supported.
 </Aside>
 
-### Change column comment or ordering
+#### Change column comment or ordering
 
 ```sql
 ALTER TABLE table_name ALTER [COLUMN] col_name col_name data_type [COMMENT col_comment] [FIRST|AFTER colA_name]
@@ -1061,7 +1201,7 @@ the schema after is:
 | +-field1
 ```
 
-### Replace columns
+#### Replace columns
 
 ```sql
 ALTER TABLE table_name REPLACE COLUMNS (col_name1 col_type1 [COMMENT col_comment1], ...)
@@ -1097,7 +1237,7 @@ the schema after is:
 | - colA
 ```
 
-### Rename columns
+#### Rename columns
 
 <Aside type="note">
 This feature is available in Delta Lake 1.2.0 and above. This feature is currently experimental.
@@ -1145,7 +1285,7 @@ Then the schema after is:
 | +-field2
 ```
 
-### Drop columns
+#### Drop columns
 
 <Aside type="note">
 This feature is available in Delta Lake 2.0 and above. This feature is currently experimental.
@@ -1169,7 +1309,7 @@ To drop multiple columns:
 ALTER TABLE table_name DROP COLUMNS (col_name_1, col_name_2)
 ```
 
-### Change column type or name
+#### Change column type or name
 
 You can change a column's type or name or drop a column by rewriting the table. To do this, use the `overwriteSchema` option:
 
@@ -1196,6 +1336,26 @@ spark.read.table(...) \
   .option("overwriteSchema", "true") \
   .saveAsTable(...)
 ```
+
+### Automatic schema update
+
+Delta Lake can automatically update the schema of a table as part of a DML transaction (either appending or overwriting), and make the schema compatible with the data being written.
+
+#### Add columns
+
+Columns that are present in the DataFrame but missing from the table are automatically added as part of a write transaction when:
+
+- `write` or `writeStream` have `.option("mergeSchema", "true")`
+- `spark.databricks.delta.schema.autoMerge.enabled` is `true`
+
+When both options are specified, the option from the `DataFrameWriter` takes precedence. The added columns are appended to the end of the struct they are present in. Case is preserved when appending a new column.
+
+#### `NullType` columns
+
+Because Parquet doesn't support `NullType`, `NullType` columns are dropped from the DataFrame when writing into Delta tables, but are still stored in the schema. When a different data type is received for that column, Delta Lake merges the schema to the new data type. If Delta Lake receives a `NullType` for an existing column, the old schema is retained and the new column is dropped during the write.
+
+`NullType` in streaming is not supported. Since you must set schemas when using streaming this should be very rare. `NullType` is also not accepted for complex types such as `ArrayType` and `MapType`.
+
 
 ## Replace table schema
 

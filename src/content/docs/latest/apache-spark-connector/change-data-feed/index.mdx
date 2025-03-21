@@ -56,7 +56,7 @@ Only changes made _after_ you enable the change data feed are recorded; past cha
 
 Delta Lake records change data for `UPDATE`, `DELETE`, and `MERGE` operations in the `_change_data` folder under the Delta table directory. These records may be skipped when Delta Lake detects it can efficiently compute the change data feed directly from the transaction log. In particular, insert-only operations and full partition deletes will not generate data in the `_change_data` directory.
 
-The files in the `_change_data` folder follow the retention policy of the table. Therefore, if you run the [VACUUM](delta-utility.html#-delta-vacuum) command, change data feed data is also deleted.
+The files in the `_change_data` folder follow the retention policy of the table. Therefore, if you run the [VACUUM](/latest/apache-spark-connector/table-utility-commands/#remove-files-no-longer-referenced-by-a-delta-table) command, change data feed data is also deleted.
 
 ## Read changes in batch queries
 
@@ -206,7 +206,7 @@ In Delta Lake 2.2, tables with column mapping enabled support both batch and str
 
 In Delta Lake 2.3 and above, you can perform batch reads on change data feed for tables with column mapping enabled that have experienced non-additive schema changes. Instead of using the schema of the latest version of the table, read operations use the schema of the end version of the table specified in the query. Queries still fail if the version range specified spans a non-additive schema change.
 
-In Delta Lake 3.0 and above, you can perform streaming read on change data feed for tables with column mapping enabled that have experienced non-additive schema changes by enabling [schema tracking](delta-streaming.html#-schema-tracking).
+In Delta Lake 3.0 and above, you can perform streaming read on change data feed for tables with column mapping enabled that have experienced non-additive schema changes by enabling [schema tracking](/latest/apache-spark-connector/table-streaming-reads-and-writes/#tracking-non-additive-schema-changes).
 
 </Aside>
 

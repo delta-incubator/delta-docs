@@ -63,7 +63,7 @@ DeltaTable deltaTable = DeltaTable.forPath(spark, "/tmp/delta/people-10m");
   </TabItem>
 </Tabs>
 
-See the [Delta Lake APIs](delta-apidoc.html) for details.
+See the [Delta Lake APIs](/latest/delta-lake-apis/) for details.
 
 <Aside
   type="caution"
@@ -93,7 +93,7 @@ UPDATE delta.\`/tmp/delta/people-10m\` SET gender = 'Female' WHERE gender = 'F';
   </TabItem>
 </Tabs>
 
-See [Configure SparkSession](delta-batch.html#-sql-support) for the steps to enable support for SQL commands.
+See [Configure SparkSession](/latest/apache-spark-connector/table-batch-reads-and-writes/#configure-sparksession) for the steps to enable support for SQL commands.
 
 <Tabs>
   <TabItem label="Python">
@@ -144,7 +144,7 @@ DeltaTable deltaTable = DeltaTable.forPath(spark, "/data/events/");
   </TabItem>
 </Tabs>
 
-See the [Delta Lake APIs](delta-apidoc.html) for details.
+See the [Delta Lake APIs](/latest/delta-lake-apis/) for details.
 
 <Aside type="tip">
   Similar to delete, update operations can get a significant speedup with
@@ -199,7 +199,7 @@ WHEN NOT MATCHED
   </TabItem>
 </Tabs>
 
-See [Configure SparkSession](delta-batch.html#-sql-support) for the steps to enable support for SQL commands.
+See [Configure SparkSession](/latest/apache-spark-connector/table-batch-reads-and-writes/#configure-sparksession) for the steps to enable support for SQL commands.
 
 <Tabs>
   <TabItem label="Python">
@@ -253,7 +253,7 @@ deltaTable .as("people") .merge( dfUpdates.as("updates"), "people.id = updates.i
   </TabItem>
 </Tabs>
 
-See the [Delta Lake APIs](delta-apidoc.html) for Scala, Java, and Python syntax details.
+See the [Delta Lake APIs](/latest/delta-lake-apis/) for Scala, Java, and Python syntax details.
 
 <Aside
   type="caution"
@@ -278,7 +278,7 @@ See the [Delta Lake APIs](delta-apidoc.html) for Scala, Java, and Python syntax 
 
 <Aside type="note">
   `WHEN NOT MATCHED BY SOURCE` clauses are supported by the Scala, Python and
-  Java [Delta Lake APIs](delta-apidoc.html) in Delta 2.3 and above. SQL is
+  Java [Delta Lake APIs](/latest/delta-lake-apis/) in Delta 2.3 and above. SQL is
   supported in Delta 2.4 and above.
 </Aside>
 
@@ -383,7 +383,7 @@ Here is a detailed description of the `merge` programmatic operation.
 
 - `whenMatched` clauses are executed when a source row matches a target table row based on the match condition. These clauses have the following semantics.
 
-  - `whenMatched` clauses can have at most one `update` and one `delete` action. The `update` action in `merge` only updates the specified columns (similar to the `update` [operation](#-delta-update)) of the matched target row. The `delete` action deletes the matched row.
+  - `whenMatched` clauses can have at most one `update` and one `delete` action. The `update` action in `merge` only updates the specified columns (similar to the `update` [operation](/latest/apache-spark-connector/table-deletes-updates-and-merges/#update-a-table)) of the matched target row. The `delete` action deletes the matched row.
   - Each `whenMatched` clause can have an optional condition. If this clause condition exists, the `update` or `delete` action is executed for any matching source-target row pair only when the clause condition is true.
   - If there are multiple `whenMatched` clauses, then they are evaluated in the order they are specified. All `whenMatched` clauses, except the last one, must have conditions.
   - If none of the `whenMatched` conditions evaluate to true for a source and target row pair that matches the merge condition, then the target row is left unchanged.
@@ -394,7 +394,7 @@ Here is a detailed description of the `merge` programmatic operation.
     for all the columns of the target Delta table. Therefore, this action assumes that the source table has the same columns as those in the target table, otherwise the query throws an analysis error.
     > **Note**
     >
-    > This behavior changes when automatic schema migration is enabled. See [Automatic schema evolution](#-merge-schema-evolution) for details.
+    > This behavior changes when automatic schema migration is enabled. See [Automatic schema evolution](/latest/apache-spark-connector/table-deletes-updates-and-merges/#automatic-schema-evolution) for details.
 
 - `whenNotMatched` clauses are executed when a source row does not match any target row based on the match condition. These clauses have the following semantics.
 
@@ -408,7 +408,7 @@ Here is a detailed description of the `merge` programmatic operation.
     for all the columns of the target Delta table. Therefore, this action assumes that the source table has the same columns as those in the target table, otherwise the query throws an analysis error.
     > **Note**
     >
-    > This behavior changes when automatic schema migration is enabled. See [Automatic schema evolution](#-merge-schema-evolution) for details.
+    > This behavior changes when automatic schema migration is enabled. See [Automatic schema evolution](/latest/apache-spark-connector/table-deletes-updates-and-merges/#automatic-schema-evolution) for details.
 
 - `whenNotMatchedBySource` clauses are executed when a target row does not match any source row based on the merge condition. These clauses have the following semantics.
   - `whenNotMatchedBySource` clauses can specify `delete` and `update` actions.
@@ -423,7 +423,7 @@ Here is a detailed description of the `merge` programmatic operation.
   as it is unclear which source row should be used to update the matched target
   row. You can preprocess the source table to eliminate the possibility of
   multiple matches. See the [change data capture
-  example](#-write-change-data-into-a-delta-table)—it shows how to preprocess
+  example](/latest/apache-spark-connector/table-deletes-updates-and-merges/#write-change-data-into-a-delta-table)—it shows how to preprocess
   the change dataset (that is, the source dataset) to retain only the latest
   change for each key before applying that change into the target Delta table. -
   You can apply a SQL `MERGE` operation on a SQL VIEW only if the view has been
@@ -437,7 +437,7 @@ Here is a detailed description of the `merge` programmatic operation.
 - For `update` and `insert` actions, the specified target columns must exist in the target Delta table.
 - For `updateAll` and `insertAll` actions, the source dataset must have all the columns of the target Delta table. The source dataset can have extra columns and they are ignored.
 
-If you do not want the extra columns to be ignored and instead want to update the target table schema to include new columns, see [Automatic schema evolution](#-merge-schema-evolution).
+If you do not want the extra columns to be ignored and instead want to update the target table schema to include new columns, see [Automatic schema evolution](/latest/apache-spark-connector/table-deletes-updates-and-merges/#automatic-schema-evolution).
 
 - For all actions, if the data type generated by the expressions producing the target columns are different from the corresponding columns in the target Delta table, `merge` tries to cast them to the types in the table.
 
@@ -495,9 +495,9 @@ You can reduce the time taken by merge using the following approaches:
   events.date = current_date() AND events.country = 'USA'
   ```
 
-  will make the query faster as it looks for matches only in the relevant partitions. Furthermore, it will also reduce the chances of conflicts with other concurrent operations. See [Concurrency control](concurrency-control.html) for more details.
+  will make the query faster as it looks for matches only in the relevant partitions. Furthermore, it will also reduce the chances of conflicts with other concurrent operations. See [Concurrency control](/latest/apache-spark-connector/concurrency-control/) for more details.
 
-- **Compact files**: If the data is stored in many small files, reading the data to search for matches can become slow. You can compact small files into larger files to improve read throughput. See [Compact files](best-practices.html#-compact-files) for details.
+- **Compact files**: If the data is stored in many small files, reading the data to search for matches can become slow. You can compact small files into larger files to improve read throughput. See [Compact files](/latest/apache-spark-connector/best-practices/#compact-files) for details.
 
 - **Control the shuffle partitions for writes**: The `merge` operation shuffles data multiple times to compute and write the updated data. The number of tasks used to shuffle is controlled by the Spark session configuration `spark.sql.shuffle.partitions`. Setting this parameter not only controls the parallelism but also determines the number of output files. Increasing the value increases parallelism but also generates a larger number of smaller data files.
 

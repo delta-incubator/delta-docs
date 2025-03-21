@@ -11,7 +11,7 @@ In Delta Sharing, data provider is the one who owns the original dataset or tabl
 
 Delta Sharing data source supports most of the options provided by Apache Spark DataFrame for performing reads through [batch](/latest/delta-batch), [streaming](/latest/delta-streaming), or [table changes (CDF)](/latest/delta-change-data-feed) APIs on shared tables. Delta Sharing doesn't support writing to a shared table. Please refer to the [Delta Sharing Repo](https://github.com/delta-io/delta-sharing/blob/main/README.md) for more details. Please follow the [quick start](https://github.com/delta-io/delta-sharing?tab=readme-ov-file#quick-start) to leverage the Delta Sharing python connector to discover the shared tables.
 
-For Delta Sharing reads on shared tables with advanced Delta Lake features such as [Deletion Vectors](/latest/delta-deletion-vectors) and [Column Mapping](/latest/delta-column-mapping), you need to enable integration with Apache Spark DataSourceV2 and Catalog APIs (since delta-sharing-spark 3.1) by setting the same configurations as Delta Lake when you create a new `SparkSession`. See [Configure SparkSession](/latest/delta-batch#sql-support).
+For Delta Sharing reads on shared tables with advanced Delta Lake features such as [Deletion Vectors](/latest/delta-deletion-vectors) and [Column Mapping](/latest/delta-column-mapping), you need to enable integration with Apache Spark DataSourceV2 and Catalog APIs (since delta-sharing-spark 3.1) by setting the same configurations as Delta Lake when you create a new `SparkSession`. See [Configure SparkSession](/latest/apache-spark-connector/table-batch-reads-and-writes/#configure-sparksession).
 
 ## Read a snapshot
 
@@ -182,7 +182,7 @@ In addition, `maxVersionsPerRpc` is provided to decide how many versions of file
 
 In order to support advanced Delta Lake features in Delta Sharing, "Delta Format Sharing" was introduced since delta-sharing-client 1.0 and delta-sharing-spark 3.1, in which the actions of a shared table are returned in Delta Lake format, allowing a Delta Lake library to read it.
 
-Please remember to set the spark configurations mentioned in [Configure SparkSession](/latest/delta-batch#sql-support) in order to read shared tables with Deletion Vectors and Column Mapping.
+Please remember to set the spark configurations mentioned in [Configure SparkSession](/latest/apache-spark-connector/table-batch-reads-and-writes/#configure-sparksession) in order to read shared tables with Deletion Vectors and Column Mapping.
 
 | Read Table Feature | Available since version |
 | --- | --- |
