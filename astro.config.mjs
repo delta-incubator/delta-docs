@@ -32,9 +32,7 @@ export default defineConfig({
         replacesTitle: true,
       },
       sidebar: [
-        { label: "Welcome", link: "/latest" },
-        { label: "Introduction", link: "/latest/delta-intro" },
-        { label: "Delta API Doc", link: "/latest/delta-apidoc" },
+        { label: "Welcome", link: "/latest/" },
         {
           label: "Apache Spark connector",
           items: [
@@ -135,6 +133,14 @@ export default defineConfig({
         {
           label: "Releases",
           link: "/latest/releases/",
+        },
+        {
+          label: "Delta Transaction Log Protocol",
+          link: "/latest/delta-transaction-log-protocol/",
+        },
+        {
+          label: "Delta Lake APIs",
+          link: "/latest/delta-lake-apis/",
         },
       ],
       plugins: [pluginDocs()],
