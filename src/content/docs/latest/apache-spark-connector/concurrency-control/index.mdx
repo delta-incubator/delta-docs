@@ -7,7 +7,7 @@ import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
 
 Delta Lake provides ACID transaction guarantees between reads and writes. This means that:
 
-- For supported [storage systems](/latest/delta-storage), multiple writers across multiple clusters can simultaneously modify a table partition and see a consistent snapshot view of the table and there will be a serial order for these writes.
+- For supported [storage systems](/latest/apache-spark-connector/storage-configuration), multiple writers across multiple clusters can simultaneously modify a table partition and see a consistent snapshot view of the table and there will be a serial order for these writes.
 - Readers continue to see a consistent snapshot view of the table that the Apache Spark job started with, even when a table is modified during a job.
 
 ## Optimistic concurrency control
@@ -20,7 +20,7 @@ Delta Lake uses [optimistic concurrency control](https://en.wikipedia.org/wiki/O
 
 ## Write conflicts
 
-The following table describes which pairs of write operations can conflict. Compaction refers to [file compaction operation](/latest/best-practices#compact-files) written with the option `dataChange` set to `false`.
+The following table describes which pairs of write operations can conflict. Compaction refers to [file compaction operation](/latest/apache-spark-connector/best-practices/#compact-files) written with the option `dataChange` set to `false`.
 
 |  | INSERT | UPDATE, DELETE, MERGE INTO | COMPACTION |
 | --- | --- | --- | --- |

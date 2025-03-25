@@ -17,7 +17,7 @@ Delta Lake handles the following operations automatically, which you should neve
 When you port an existing application to Delta Lake, you should avoid the following operations, which bypass the transaction log:
 
 - **Manually modify data**: Delta Lake uses the transaction log to atomically commit changes to the table. Because the log is the source of truth, files that are written out but not added to the transaction log are not read by Spark. Similarly, even if you manually delete a file, a pointer to the file is still present in the transaction log. Instead of manually modifying files stored in a Delta table, always use the commands that are described in this guide.
-- **External readers**: Directly reading the data stored in Delta Lake. For information on how to read Delta tables, see [Integrations](/latest/integrations).
+- **External readers**: Directly reading the data stored in Delta Lake. For information on how to read Delta tables, see [read a table](/latest/apache-spark-connector/table-batch-reads-and-writes/#read-a-table).
 
 ### Example
 
@@ -37,8 +37,10 @@ The [second example](#convert-to-delta-table) shows how to use `CONVERT TO TABLE
 
 <Tabs>
   <TabItem label="Python">
-    ```python data = spark.read.format("parquet").load("/data-pipeline")
-    data.write.format("delta").save("/tmp/delta/data-pipeline/") ```
+    ```python
+    data = spark.read.format("parquet").load("/data-pipeline")
+    data.write.format("delta").save("/tmp/delta/data-pipeline/")
+    ```
   </TabItem>
 </Tabs>
 
@@ -46,8 +48,9 @@ The [second example](#convert-to-delta-table) shows how to use `CONVERT TO TABLE
 
 <Tabs>
   <TabItem label="Python">
-    ```python spark.sql("CREATE TABLE events USING DELTA LOCATION
-    '/tmp/delta/data-pipeline/'") ```
+    ```python
+    spark.sql("CREATE TABLE events USING DELTA LOCATION '/tmp/delta/data-pipeline/'")
+    ```
   </TabItem>
 </Tabs>
 
@@ -59,8 +62,10 @@ You have two options for converting a Parquet table to a Delta table:
 
 <Tabs>
   <TabItem label="SQL">
-    ```sql CONVERT TO DELTA parquet.`/data-pipeline/` CREATE TABLE events USING
-    DELTA LOCATION '/data-pipeline/' ```
+    ```sql
+    CONVERT TO DELTA parquet.`/data-pipeline/`
+    CREATE TABLE events USING DELTA LOCATION '/data-pipeline/'
+    ```
   </TabItem>
 </Tabs>
 
@@ -68,12 +73,14 @@ You have two options for converting a Parquet table to a Delta table:
 
 <Tabs>
   <TabItem label="SQL">
-    ```sql CREATE TABLE events USING PARQUET OPTIONS (path '/data-pipeline/')
-    CONVERT TO DELTA events ```
+    ```sql
+    CREATE TABLE events USING PARQUET OPTIONS (path '/data-pipeline/')
+    CONVERT TO DELTA events
+    ```
   </TabItem>
 </Tabs>
 
-For details, see [Convert a Parquet table to a Delta table](/latest/delta-utility#convert-a-parquet-table-to-a-delta-table).
+For details, see [Convert a Parquet table to a Delta table](/latest/apache-spark-connector/table-utility-commands/#convert-a-parquet-table-to-a-delta-table).
 
 ## Migrate Delta Lake workloads to newer versions
 
@@ -121,9 +128,9 @@ When calling `CONVERT TO DELTA` on a catalog table Delta Lake 2.1 infers the dat
 
 ### Delta Lake 1.2 or below to Delta Lake 2.0 or above
 
-Delta Lake 2.0.0 introduced a behavior change for [DROP CONSTRAINT](/latest/delta-constraints#check-constraint). In version 1.2 and below, no error was thrown when trying to drop a non-existent constraint. In version 2.0.0 and above, the behavior is changed to throw a constraint not exists error. To avoid the error, use `IF EXISTS` construct (for example, `ALTER TABLE events DROP CONSTRAINT IF EXISTS constraint_name`). There is no change in behavior in dropping an existing constraint.
+Delta Lake 2.0.0 introduced a behavior change for [DROP CONSTRAINT](/latest/apache-spark-connector/constraints/#check-constraint). In version 1.2 and below, no error was thrown when trying to drop a non-existent constraint. In version 2.0.0 and above, the behavior is changed to throw a constraint not exists error. To avoid the error, use `IF EXISTS` construct (for example, `ALTER TABLE events DROP CONSTRAINT IF EXISTS constraint_name`). There is no change in behavior in dropping an existing constraint.
 
-Delta Lake 2.0.0 introduced support for [Dynamic Partition Overwrites](/latest/delta-batch#overwrite). In version 1.2 and below, enabling dynamic partition overwrite mode in either the Spark session configuration or a `DataFrameWriter` option was a no-op, and writes in `overwrite` mode replaced all existing data in every partition of the table. In version 2.0.0 and above, when dynamic partition overwrite mode is enabled, Delta Lake replaces all existing data in each logical partition for which the write will commit new data.
+Delta Lake 2.0.0 introduced support for [Dynamic Partition Overwrites](/latest/apache-spark-connector/table-batch-reads-and-writes/#overwrite). In version 1.2 and below, enabling dynamic partition overwrite mode in either the Spark session configuration or a `DataFrameWriter` option was a no-op, and writes in `overwrite` mode replaced all existing data in every partition of the table. In version 2.0.0 and above, when dynamic partition overwrite mode is enabled, Delta Lake replaces all existing data in each logical partition for which the write will commit new data.
 
 ### Delta Lake 1.1 or below to Delta Lake 1.2 or above
 
@@ -135,22 +142,36 @@ If the name of a partition column in a Delta table contains invalid characters (
 
 <Tabs>
   <TabItem label="Python">
-    ```python spark.read \ .format("delta") \ .load("/the/delta/table/path") \
-    .withColumnRenamed("column name", "column-name") \ .write \ .format("delta")
-    \ .mode("overwrite") \ .option("overwriteSchema", "true") \
-    .save("/the/delta/table/path") ```
+    ```python
+    spark.read \
+      .format("delta") \
+      .load("/the/delta/table/path") \
+      .withColumnRenamed("column name", "column-name") \
+      .write \
+      .format("delta") \
+      .mode("overwrite") \
+      .option("overwriteSchema", "true") \
+      .save("/the/delta/table/path")
+    ```
   </TabItem>
   <TabItem label="Scala">
-    ```scala spark.read \ .format("delta") \ .load("/the/delta/table/path") \
-    .withColumnRenamed("column name", "column-name") \ .write \ .format("delta")
-    \ .mode("overwrite") \ .option("overwriteSchema", "true") \
-    .save("/the/delta/table/path") ```
+    ```scala
+    spark.read \
+      .format("delta") \
+      .load("/the/delta/table/path") \
+      .withColumnRenamed("column name", "column-name") \
+      .write \
+      .format("delta") \
+      .mode("overwrite") \
+      .option("overwriteSchema", "true") \
+      .save("/the/delta/table/path")
+    ```
   </TabItem>
 </Tabs>
 
 ### Delta Lake 0.6 or below to Delta Lake 0.7 or above
 
-If you are using `DeltaTable` APIs in Scala, Java, or Python to [update](/latest/delta-update) or [run utility operations](/latest/delta-utility) on them, then you may have to add the following configurations when creating the `SparkSession` used to perform those operations.
+If you are using `DeltaTable` APIs in Scala, Java, or Python to [update](/latest/apache-spark-connector/table-deletes-updates-and-merges/) or [run utility operations](/latest/apache-spark-connector/table-utility-commands/) on them, then you may have to add the following configurations when creating the `SparkSession` used to perform those operations.
 
 <Tabs>
   <TabItem label="Python">
@@ -165,7 +186,6 @@ If you are using `DeltaTable` APIs in Scala, Java, or Python to [update](/latest
       .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
       .getOrCreate()
     ```
-
   </TabItem>
   <TabItem label="Scala">
     ```scala
@@ -179,7 +199,6 @@ If you are using `DeltaTable` APIs in Scala, Java, or Python to [update](/latest
       .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
       .getOrCreate()
     ```
-
   </TabItem>
   <TabItem label="Java">
     ```java
@@ -193,7 +212,6 @@ If you are using `DeltaTable` APIs in Scala, Java, or Python to [update](/latest
       .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
       .getOrCreate();
     ```
-
   </TabItem>
 </Tabs>
 
@@ -214,26 +232,3 @@ Alternatively, you can add additional configurations when submitting you Spark a
     ```
   </TabItem>
 </Tabs>
-
-## Limitations
-
-The following limitations exist:
-
-- UniForm does not work on tables with deletion vectors enabled. See [What are deletion vectors?](/latest/delta-deletion-vectors).
-- Delta tables with UniForm enabled do not support `VOID` type.
-- Iceberg/Hudi clients can only read from UniForm. Writes are not supported.
-- Iceberg/Hudi reader clients might have individual limitations, regardless of UniForm. See documentation for your target client.
-
-<Aside type="caution">
-  UniForm is read-only from an Iceberg and Hudi perspective. This, however,
-  cannot be enforced as for Iceberg, UniForm uses HMS as an Iceberg catalog and
-  for Hudi, metadata is stored on the file system. If any external writer (not
-  Delta Lake) writes to this Iceberg/Hudi table, this may destroy your Delta
-  table and cause data loss, as the Iceberg/Hudi writer may perform data cleanup
-  or garbage collection that Delta is unaware of.
-</Aside>
-
-The following Delta Lake features work for Delta clients when UniForm is enabled, but do not have support in Iceberg:
-
-- Change Data Feed
-- Delta Sharing

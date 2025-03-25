@@ -109,7 +109,7 @@ If your table is partitioned and you want to repartition just one partition base
 
 <Aside type="note">
   This operation does not remove the old files. To remove them, run the
-  [VACUUM](/latest/delta-utility#delta-vacuum) command.
+  [VACUUM](/latest/apache-spark-connector/table-utility-commands/#remove-files-no-longer-referenced-by-a-delta-table) command.
 </Aside>
 
 ## Replace the content or schema of a table
@@ -125,7 +125,7 @@ While you can delete the entire directory of a Delta table and create a new tabl
 - You lose all of content in the deleted files; it's hard to recover if you delete the wrong table.
 - The directory deletion is not atomic. While you are deleting the table a concurrent query reading the table can fail or see a partial table.
 
-If you don't need to change the table schema, you can [delete](/latest/delta-update#delete-from-a-table) data from a Delta table and insert your new data, or [update](/latest/delta-update#update-a-table) the table to fix the incorrect values.
+If you don't need to change the table schema, you can [delete](/latest/apache-spark-connector/table-deletes-updates-and-merges/#delete-from-a-table) data from a Delta table and insert your new data, or [update](/latest/apache-spark-connector/table-deletes-updates-and-merges/#update-a-table) the table to fix the incorrect values.
 
 If you want to change the table schema, you can replace the whole table atomically. For example:
 
@@ -175,11 +175,11 @@ If you want to change the table schema, you can replace the whole table atomical
 There are multiple benefits with this approach:
 
 - Overwriting a table is much faster because it doesn't need to list the directory recursively or delete any files.
-- The old version of the table still exists. If you delete the wrong table you can easily retrieve the old data using [Time Travel](/latest/delta-batch#query-an-older-snapshot-of-a-table-time-travel).
+- The old version of the table still exists. If you delete the wrong table you can easily retrieve the old data using [Time Travel](/latest/apache-spark-connector/table-batch-reads-and-writes/#query-an-older-snapshot-of-a-table-time-travel).
 - It's an atomic operation. Concurrent queries can still read the table while you are deleting the table.
 - Because of Delta Lake ACID transaction guarantees, if overwriting the table fails, the table will be in its previous state.
 
-In addition, if you want to delete old files to save storage cost after overwriting the table, you can use [VACUUM](/latest/delta-utility#delta-vacuum) to delete them. It's optimized for file deletion and usually faster than deleting the entire directory.
+In addition, if you want to delete old files to save storage cost after overwriting the table, you can use [VACUUM](/latest/apache-spark-connector/table-utility-commands/#remove-files-no-longer-referenced-by-a-delta-table) to delete them. It's optimized for file deletion and usually faster than deleting the entire directory.
 
 ## Spark caching
 

@@ -19,7 +19,7 @@ Delta Lake uses versioned Parquet files to store your data in your cloud storage
 
 ## How can I read and write data with Delta Lake?
 
-You can use your favorite Apache Spark APIs to read and write data with Delta Lake. See [Read a table](/latest/delta-batch#deltadataframereads) and [Write to a table](/latest/delta-batch#deltadataframewrites).
+You can use your favorite Apache Spark APIs to read and write data with Delta Lake. See [Read a table](/latest/apache-spark-connector/table-batch-reads-and-writes/#read-a-table) and [Write to a table](/latest/apache-spark-connector/table-batch-reads-and-writes/#write-to-table).
 
 ## Where does Delta Lake store the data?
 
@@ -31,11 +31,11 @@ Yes you can copy your Delta Lake table to another location. Remember to copy fil
 
 ## Can I stream data directly into and from Delta tables?
 
-Yes, you can use Structured Streaming to directly write data into Delta tables and read from Delta tables. See [Stream data into Delta tables](/latest/delta-streaming#stream-sink) and [Stream data from Delta tables](/latest/delta-streaming#stream-source).
+Yes, you can use Structured Streaming to directly write data into Delta tables and read from Delta tables. See [Stream data into Delta tables](/latest/apache-spark-connector/table-streaming-reads-and-writes/#delta-table-as-a-sink) and [Stream data from Delta tables](/latest/apache-spark-connector/table-streaming-reads-and-writes/#delta-table-as-a-source).
 
 ## Does Delta Lake support writes or reads using the Spark Streaming DStream API?
 
-Delta does not support the DStream API. We recommend [Table streaming reads and writes](/latest/delta-streaming).
+Delta does not support the DStream API. We recommend [Table streaming reads and writes](/latest/apache-spark-connector/table-streaming-reads-and-writes/).
 
 ## When I use Delta Lake, will I be able to port my code to other Spark platforms easily?
 
@@ -47,4 +47,4 @@ Delta Lake does not support multi-table transactions and foreign keys. Delta Lak
 
 ## How can I change the type of a column?
 
-Changing a column's type or dropping a column requires rewriting the table. For an example, see [Change column type](/latest/delta-batch#change-column-type).
+Changing a column's type or dropping a column requires rewriting the table. For an example, see [Change column type](/latest/apache-spark-connector/table-batch-reads-and-writes/#change-column-type-or-name).
