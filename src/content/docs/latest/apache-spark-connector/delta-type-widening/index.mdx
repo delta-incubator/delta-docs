@@ -85,7 +85,7 @@ The table schema is updated without rewriting the underlying Parquet files.
 Type changes are applied automatically during ingestion with `INSERT` and `MERGE INTO` commands when:
 
 - Type widening is enabled on the target table
-- The command runs with [automatic schema evolution](/latest/delta-update#merge-schema-evolution) enabled
+- The command runs with [automatic schema evolution](/latest/apache-spark-connector/table-deletes-updates-and-merges/#automatic-schema-evolution) enabled
 - The source column type is wider than the target column type
 - Changing the target column type to the source type is a [supported type change](#supported-type-changes)
 
@@ -103,6 +103,6 @@ The type widening feature can be removed from a Delta table using the `DROP FEAT
   </TabItem>
 </Tabs>
 
-See [Drop Delta table features](/latest/delta-drop-feature) for more information on dropping Delta table features.
+See [Drop Delta table features](/latest/apache-spark-connector/drop-delta-table-features/) for more information on dropping Delta table features.
 
 When dropping the type widening feature, the underlying Parquet files are rewritten when necessary to ensure that the column types in the files match the column types in the Delta table schema. After the type widening feature is removed from the table, Delta clients that don't support the feature can read and write to the table.

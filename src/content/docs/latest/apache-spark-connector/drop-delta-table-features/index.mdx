@@ -27,12 +27,12 @@ To remove a Delta table feature, you run an `ALTER TABLE <table-name> DROP FEATU
 You can drop the following Delta table features:
 
 - `deletionVectors`. See [What are deletion vectors?](/latest/apache-spark-connector/what-are-deletion-vectors/).
-- `typeWidening-preview`. See [Delta type widening](/latest/apache-spark-connector/type-widening/). Type widening is available in preview in Delta Lake 3.2.0 and above.
+- `typeWidening-preview`. See [Delta type widening](/latest/apache-spark-connector/delta-type-widening/). Type widening is available in preview in Delta Lake 3.2.0 and above.
 - `v2Checkpoint`. See [V2 Checkpoint Spec](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#v2-spec). Drop support for V2 Checkpoints is available in Delta Lake 3.1.0 and above.
 - `columnMapping`. See [Delta column mapping](/latest/apache-spark-connector/delta-column-mapping/). Drop support for column mapping is available in Delta Lake 3.3.0 and above.
 - `vacuumProtocolCheck`. See [Vacuum Protocol Check Spec](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#vacuum-protocol-check). Drop support for vacuum protocol check is available in Delta Lake 3.3.0 and above.
 - `checkConstraints`. See [Constraints](/latest/apache-spark-connector/constraints/). Drop support for check constraints is available in Delta Lake 3.3.0 and above.
-- `inCommitTimestamp`. See [In-Commit Timestamps](/latest/apache-spark-connector/table-batch-operations/#in-commit-timestamps). In-Commit Timestamp is available in Delta Lake 3.3.0 and above.
+- `inCommitTimestamp`. See [In-Commit Timestamps](/latest/apache-spark-connector/table-batch-reads-and-writes/#in-commit-timestamps). In-Commit Timestamp is available in Delta Lake 3.3.0 and above.
 
 You cannot drop other [Delta table features](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#valid-feature-names-in-table-features).
 

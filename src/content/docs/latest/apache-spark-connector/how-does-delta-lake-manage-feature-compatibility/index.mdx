@@ -14,21 +14,21 @@ The following Delta Lake features break forward compatibility. Features are enab
 | Feature | Requires Delta Lake version or later | Documentation |
 | --- | --- | --- |
 | `CHECK` constraints | [Delta Lake 0.8.0](https://github.com/delta-io/delta/releases/tag/v0.8.0) | [CHECK constraint](/latest/apache-spark-connector/constraints/#check-constraint) |
-| Generated columns | [Delta Lake 1.0.0](https://github.com/delta-io/delta/releases/tag/v1.0.0) | [Use generated columns](/latest/apache-spark-connector/table-batch-operations/#use-generated-columns) |
-| Column mapping | [Delta Lake 1.2.0](https://github.com/delta-io/delta/releases/tag/v1.2.0) | [Delta column mapping](/latest/column-mapping/) |
+| Generated columns | [Delta Lake 1.0.0](https://github.com/delta-io/delta/releases/tag/v1.0.0) | [Use generated columns](/latest/apache-spark-connector/table-batch-reads-and-writes/#use-generated-columns) |
+| Column mapping | [Delta Lake 1.2.0](https://github.com/delta-io/delta/releases/tag/v1.2.0) | [Delta column mapping](/latest/apache-spark-connector/delta-column-mapping/) |
 | Change data feed | [Delta Lake 2.0.0](https://github.com/delta-io/delta/releases/tag/v2.0.0) | [Change data feed](/latest/apache-spark-connector/change-data-feed/) |
-| Deletion vectors | [Delta Lake 2.3.0](https://github.com/delta-io/delta/releases/tag/v2.3.0) | [What are deletion vectors?](/latest/deletion-vectors/) |
+| Deletion vectors | [Delta Lake 2.3.0](https://github.com/delta-io/delta/releases/tag/v2.3.0) | [What are deletion vectors?](/latest/apache-spark-connector/what-are-deletion-vectors/) |
 | Table features | [Delta Lake 2.3.0](https://github.com/delta-io/delta/releases/tag/v2.3.0) | [What are table features?](#what-are-table-features) |
 | Timestamp without Timezone | [Delta Lake 2.4.0](https://github.com/delta-io/delta/releases/tag/v2.4.0) | [TimestampNTZType](https://spark.apache.org/docs/latest/sql-ref-datatypes.html) |
 | Iceberg Compatibility V1 | [Delta Lake 3.0.0](https://github.com/delta-io/delta/releases/tag/v3.0.0) | [IcebergCompatV1](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#iceberg-compatibility-v1) |
 | Iceberg Compatibility V2 | [Delta Lake 3.1.0](https://github.com/delta-io/delta/releases/tag/v3.1.0) | [IcebergCompatV2](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#iceberg-compatibility-v2) |
 | V2 Checkpoints | [Delta Lake 3.0.0](https://github.com/delta-io/delta/releases/tag/v3.0.0) | [V2 Checkpoint Spec](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#v2-spec) |
 | Domain metadata | [Delta Lake 3.0.0](https://github.com/delta-io/delta/releases/tag/v3.0.0) | [Domain Metadata Spec](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#domain-metadata) |
-| Clustering | [Delta Lake 3.1.0](https://github.com/delta-io/delta/releases/tag/v3.1.0) | [Use liquid clustering for Delta tables](/latest/liquid-clustering/) |
+| Clustering | [Delta Lake 3.1.0](https://github.com/delta-io/delta/releases/tag/v3.1.0) | [Use liquid clustering for Delta tables](/latest/apache-spark-connector/use-liquid-clustering-for-delta-tables/) |
 | Row Tracking | [Delta Lake 3.2.0](https://github.com/delta-io/delta/releases/tag/v3.2.0) | [Use row tracking for Delta tables](/latest/row-tracking/) |
-| Type widening (Preview) | [Delta Lake 3.2.0](https://github.com/delta-io/delta/releases/tag/v3.2.0) | [Delta type widening](/latest/type-widening/) |
-| Identity columns | [Delta Lake 3.3.0](https://github.com/delta-io/delta/releases/tag/v3.3.0) | [Use identity columns](/latest/apache-spark-connector/table-batch-operations/#use-identity-columns) |
-| In-Commit Timestamps | [Delta Lake 3.3.0](https://github.com/delta-io/delta/releases/tag/v3.3.0) | [Use identity columns](/latest/apache-spark-connector/table-batch-operations/#use-identity-columns) |
+| Type widening (Preview) | [Delta Lake 3.2.0](https://github.com/delta-io/delta/releases/tag/v3.2.0) | [Delta type widening](/latest/apache-spark-connector/delta-type-widening/) |
+| Identity columns | [Delta Lake 3.3.0](https://github.com/delta-io/delta/releases/tag/v3.3.0) | [Use identity columns](/latest/apache-spark-connector/table-batch-reads-and-writes/#use-identity-columns) |
+| In-Commit Timestamps | [Delta Lake 3.3.0](https://github.com/delta-io/delta/releases/tag/v3.3.0) | [Use identity columns](/latest/apache-spark-connector/table-batch-reads-and-writes/#use-identity-columns) |
 
 ## What is a table protocol specification?
 
@@ -102,18 +102,18 @@ The following table shows minimum protocol versions required for Delta Lake feat
 | Basic functionality | 2 | 1 | [Welcome to the Delta Lake documentation](/latest/) |
 | `CHECK` constraints | 3 | 1 | [CHECK constraint](/latest/apache-spark-connector/constraints/#check-constraint) |
 | Change data feed | 4 | 1 | [Change data feed](/latest/apache-spark-connector/change-data-feed/) |
-| Generated columns | 4 | 1 | [Use generated columns](/latest/apache-spark-connector/table-batch-operations/#use-generated-columns) |
-| Column mapping | 5 | 2 | [Delta column mapping](/latest/column-mapping/) |
-| Identity columns | 6 | 1 | [Use identity columns](/latest/apache-spark-connector/table-batch-operations/#use-identity-columns) |
+| Generated columns | 4 | 1 | [Use generated columns](/latest/apache-spark-connector/table-batch-reads-and-writes/#use-generated-columns) |
+| Column mapping | 5 | 2 | [Delta column mapping](/latest/apache-spark-connector/delta-column-mapping/) |
+| Identity columns | 6 | 1 | [Use identity columns](/latest/apache-spark-connector/table-batch-reads-and-writes/#use-identity-columns) |
 | Table features read | 7 | 1 | [What are table features?](#what-are-table-features) |
 | Table features write | 7 | 3 | [What are table features?](#what-are-table-features) |
-| Deletion vectors | 7 | 3 | [What are deletion vectors?](/latest/deletion-vectors/) |
+| Deletion vectors | 7 | 3 | [What are deletion vectors?](/latest/apache-spark-connector/what-are-deletion-vectors/) |
 | Timestamp without Timezone | 7 | 3 | [TimestampNTZType](https://spark.apache.org/docs/latest/sql-ref-datatypes.html) |
 | Iceberg Compatibility V1 | 7 | 2 | [IcebergCompatV1](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#iceberg-compatibility-v1) |
 | V2 Checkpoints | 7 | 3 | [V2 Checkpoint Spec](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#v2-spec) |
 | Vacuum Protocol Check | 7 | 3 | [Vacuum Protocol Check Spec](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#vacuum-protocol-check) |
-| Row Tracking | 7 | 3 | [Use row tracking for Delta tables](/latest/row-tracking/) |
-| Type widening (Preview) | 7 | 3 | [Delta type widening](/latest/type-widening/) |
+| Row Tracking | 7 | 3 | [Use row tracking for Delta tables](/latest/apache-spark-connector/use-row-tracking-for-delta-tables/) |
+| Type widening (Preview) | 7 | 3 | [Delta type widening](/latest/apache-spark-connector/delta-type-widening/) |
 | In-Commit Timestamps | 7 | 3 | [In-Commit Timestamps Spec](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#in-commit-timestamps) |
 
 ## Upgrading protocol versions

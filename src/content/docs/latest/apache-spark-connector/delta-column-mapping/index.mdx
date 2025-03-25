@@ -62,7 +62,7 @@ When column mapping is enabled for a Delta table, you can rename a column:
   </TabItem>
 </Tabs>
 
-For more examples, see [Rename columns](/latest/apache-spark-connector/table-batch-operations/#rename-columns).
+For more examples, see [Rename columns](/latest/apache-spark-connector/table-batch-reads-and-writes/#rename-columns).
 
 ## Drop columns
 
@@ -80,7 +80,7 @@ ALTER TABLE table_name DROP COLUMNS (col_name_1, col_name_2, ...);
 </Tabs>
 
 For more details, see
-[Drop columns](/latest/apache-spark-connector/table-batch-operations/#drop-columns).
+[Drop columns](/latest/apache-spark-connector/table-batch-reads-and-writes/#drop-columns).
 
 ## Supported characters in column names
 
@@ -103,7 +103,7 @@ as any of these characters in the table's column names: `,;{}()\n\t=`.
   [Spark Structured Streaming](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html)
   reads require schema tracking to be enabled on a column mapping enabled table
   that underwent column renaming or column dropping. See
-  [Tracking non-additive schema changes](/latest/apache-spark-connector/table-streaming/#schema-tracking)
+  [Tracking non-additive schema changes](/latest/apache-spark-connector/table-streaming-reads-and-writes/#schema-tracking)
 - The Delta table protocol specifies two modes of column mapping, by `name` and
   by `id`. Delta Lake 2.1 and below do not support `id` mode.
 ```

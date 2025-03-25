@@ -135,10 +135,6 @@ export default defineConfig({
           link: "/latest/releases/",
         },
         {
-          label: "Delta Transaction Log Protocol",
-          link: "/latest/delta-transaction-log-protocol/",
-        },
-        {
           label: "Delta Lake APIs",
           link: "/latest/delta-lake-apis/",
         },
