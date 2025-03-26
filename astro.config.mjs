@@ -184,7 +184,6 @@ export default defineConfig({
           link: "/latest/table-properties/",
         },
       ],
-      plugins: [pluginDocs()],
     }),
   ],
 });
