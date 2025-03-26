@@ -1,6 +1,4 @@
 {
-  "tabWidth": 2,
-  "useTabs": false,
   "plugins": ["prettier-plugin-astro"],
   "overrides": [
     {
@@ -10,9 +8,15 @@
       }
     },
     {
-      "files": "*.md",
+      "files": ["*.md", "*.mdx"],
       "options": {
-        "useTabs": true
+        "parser": "mdx",
+        "proseWrap": "never",
+        "embeddedLanguageFormatting": "auto",
+        "htmlWhitespaceSensitivity": "css",
+        "bracketSameLine": false,
+        "singleAttributePerLine": true,
+        "tabWidth": 2
       }
     }
   ]
