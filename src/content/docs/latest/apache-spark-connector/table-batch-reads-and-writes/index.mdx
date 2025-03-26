@@ -582,7 +582,7 @@ By default, special characters such as spaces and any of the characters `,;{}()\
 
 ### Default table properties
 
-Delta Lake configurations set in the SparkSession override the default [table properties](#table-properties) for new Delta Lake tables created in the session.
+Delta Lake configurations set in the SparkSession override the default [table properties](/latest/table-properties/) for new Delta Lake tables created in the session.
 The prefix used in the SparkSession is different from the configurations used in the table properties.
 
 | Delta Lake conf | SparkSession conf |
@@ -740,7 +740,7 @@ The data files backing a Delta table are *never* deleted automatically; data fil
 By default you can time travel to a Delta table up to 30 days old unless you have:
 
 - Run `VACUUM` on your Delta table.
-- Changed the data or log file retention periods using the following [table properties](/latest/delta-table-properties-reference/):
+- Changed the data or log file retention periods using the following [table properties](/latest/table-properties/):
   - `delta.logRetentionDuration = "interval <interval>"`: controls how long the history for a table is kept. The default is `interval 30 days`.
 
 Each time a checkpoint is written, Delta automatically cleans up log entries older than the retention interval. If you set this config to a large enough value, many log entries are retained. This should not impact performance as operations against the log are constant time. Operations on history are parallel but will become more expensive as the log size increases.
@@ -1428,7 +1428,7 @@ You can also set `delta.`-prefixed properties during the first commit to a Delta
   </TabItem>
 </Tabs>
 
-See also the [Delta table properties reference](/latest/delta-table-properties-reference/).
+See also the [Delta table properties reference](/latest/table-properties/).
 
 ## Syncing table schema and properties to the Hive metastore
 

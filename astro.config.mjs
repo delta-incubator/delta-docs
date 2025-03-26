@@ -168,12 +168,20 @@ export default defineConfig({
           link: "/latest/delta-kernel/",
         },
         {
+          label: "Delta Lake APIs",
+          link: "/latest/delta-lake-apis/",
+        },
+        {
           label: "Releases",
           link: "/latest/releases/",
         },
         {
-          label: "Delta Lake APIs",
-          link: "/latest/delta-lake-apis/",
+          label: "Delta Lake Resources",
+          link: "/latest/delta-resources/",
+        },
+        {
+          label: "Delta table properties reference",
+          link: "/latest/table-properties/",
         },
       ],
       plugins: [pluginDocs()],
