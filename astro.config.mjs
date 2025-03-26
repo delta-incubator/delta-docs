@@ -1,7 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
-import { pluginDocs } from "plugin-docs";
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,6 +10,7 @@ export default defineConfig({
       entrypoint: "astro/assets/services/sharp",
     },
   },
+
   redirects: {
     "/": "/latest",
   },
