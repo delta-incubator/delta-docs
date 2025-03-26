@@ -62,7 +62,7 @@ Delta Lake can improve the speed of read queries from a table by coalescing smal
   </TabItem>
 </Tabs>
 
-For Scala, Java, and Python API syntax details, see the [Delta Lake APIs](/latest/delta-apidoc).
+For Scala, Java, and Python API syntax details, see the [Delta Lake APIs](/latest/delta-lake-apis/).
 
 <Aside type="note">
   - Bin-packing optimization is *idempotent*, meaning that if it is run twice on
@@ -110,7 +110,7 @@ These settings accept the following options:
 
 Data skipping information is collected automatically when you write data into a Delta Lake table. Delta Lake takes advantage of this information (minimum and maximum values for each column) at query time to provide faster queries. You do not need to configure data skipping; the feature is activated whenever applicable. However, its effectiveness depends on the layout of your data. For best results, apply [Z-Ordering](#z-ordering-multi-dimensional-clustering).
 
-Collecting statistics on a column containing long values such as `string` or `binary` is an expensive operation. To avoid collecting statistics on such columns you can configure the [table property](/latest/delta-batch#table-properties) `delta.dataSkippingNumIndexedCols`. This property indicates the position index of a column in the table's schema. All columns with a position index less than the `delta.dataSkippingNumIndexedCols` property will have statistics collected. For the purposes of collecting statistics, each field within a nested column is considered as an individual column. To avoid collecting statistics on columns containing long values, either set the `delta.dataSkippingNumIndexedCols` property so that the long value columns are after this index in the table's schema, or move columns containing long strings to an index position greater than the `delta.dataSkippingNumIndexedCols` property by using [ALTER TABLE ALTER COLUMN](https://spark.apache.org/docs/latest/sql-ref-syntax-ddl-alter-table.html#alter-or-change-column).
+Collecting statistics on a column containing long values such as `string` or `binary` is an expensive operation. To avoid collecting statistics on such columns you can configure the [table property](/latest/apache-spark-connector/table-batch-reads-and-writes/#table-properties) `delta.dataSkippingNumIndexedCols`. This property indicates the position index of a column in the table's schema. All columns with a position index less than the `delta.dataSkippingNumIndexedCols` property will have statistics collected. For the purposes of collecting statistics, each field within a nested column is considered as an individual column. To avoid collecting statistics on columns containing long values, either set the `delta.dataSkippingNumIndexedCols` property so that the long value columns are after this index in the table's schema, or move columns containing long strings to an index position greater than the `delta.dataSkippingNumIndexedCols` property by using [ALTER TABLE ALTER COLUMN](https://spark.apache.org/docs/latest/sql-ref-syntax-ddl-alter-table.html#alter-or-change-column).
 
 ## Z-Ordering (multi-dimensional clustering)
 
@@ -160,7 +160,7 @@ Z-Ordering is a [technique](https://en.wikipedia.org/wiki/Z-order_curve) to colo
   </TabItem>
 </Tabs>
 
-For Scala, Java, and Python API syntax details, see the [Delta Lake APIs](/latest/delta-apidoc)
+For Scala, Java, and Python API syntax details, see the [Delta Lake APIs](/latest/delta-lake-apis/)
 
 If you expect a column to be commonly used in query predicates and if that column has high cardinality (that is, a large number of distinct values), then use `ZORDER BY`.
 

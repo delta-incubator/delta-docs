@@ -131,6 +131,43 @@ export default defineConfig({
           ],
         },
         {
+          label: "Trino connector",
+          link: "/latest/trino-connector/",
+        },
+        {
+          label: "Presto connector",
+          link: "/latest/presto-connector/",
+        },
+        {
+          label:
+            "Presto, Trino, and Athena to Delta Lake integration using manifests",
+          link: "/latest/presto-integration/",
+        },
+        {
+          label: "AWS Redshift Spectrum connector",
+          link: "/latest/aws-redshift-spectrum-connector/",
+        },
+        {
+          label: "Snowflake integration",
+          link: "/latest/snowflake-integration/",
+        },
+        {
+          label: "Google BigQuery connector",
+          link: "/latest/bigquery-integration/",
+        },
+        {
+          label: "Apache Flink connector",
+          link: "/latest/flink-integration/",
+        },
+        {
+          label: "Delta more connectors",
+          link: "/latest/delta-more-connectors/",
+        },
+        {
+          label: "Delta Kernel",
+          link: "/latest/delta-kernel/",
+        },
+        {
           label: "Releases",
           link: "/latest/releases/",
         },
