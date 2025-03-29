@@ -8,6 +8,9 @@ export default defineConfig({
   image: {
     service: {
       entrypoint: "astro/assets/services/sharp",
+      config: {
+        formats: ["png", "jpg", "jpeg", "webp", "gif", "svg"],
+      },
     },
   },
 
