@@ -5,15 +5,6 @@ import starlight from "@astrojs/starlight";
 // https://astro.build/config
 export default defineConfig({
   site: "https://delta-docs-incubator.netlify.app/",
-  image: {
-    service: {
-      entrypoint: "astro/assets/services/sharp",
-      config: {
-        formats: ["png", "jpg", "jpeg", "webp", "gif", "svg"],
-      },
-    },
-  },
-
   redirects: {
     "/": "/latest",
   },
