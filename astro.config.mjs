@@ -182,6 +182,11 @@ export default defineConfig({
           label: "Delta table properties reference",
           link: "/latest/table-properties/",
         },
+        {
+          label: "Contribute",
+          link: "https://github.com/delta-io/delta/blob/master/CONTRIBUTING.md",
+          attrs: { target: "_blank" },
+        },
       ],
     }),
   ],
