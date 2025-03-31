@@ -6,8 +6,6 @@ description: Learn how to use constraints in Delta Lake tables to ensure data qu
 import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
 import { Code } from "@astrojs/starlight/components";
 
-## Constraints
-
 Delta tables support standard SQL constraint management clauses that ensure that the quality and integrity of data added to a table is automatically verified. When a constraint is violated, Delta Lake throws an `InvariantViolationException` to signal that the new data can't be added.
 
 <Aside
