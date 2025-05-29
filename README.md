@@ -27,11 +27,11 @@ pnpm i
 
 The docs site is build on [Astro](https://astro.build/). Using pnpm, you can run a variety of commands:
 
-| Command               | Description                                     |
-| --------------------- | ----------------------------------------------- |
-| `pnpm run lint`       | Run ESLint on the docs site code                |
-| `pnpm run format`     | Format docs site code using Prettier            |
-| `pnpm run dev`        | Start Astro in development mode                 |
-| `pnpm run build`      | Build the Astro site for production             |
-| `pnpm run preview`    | Preview the built Astro site                    |
-| `pnpm run astro`      | Run Astro CLI                                   |
+| Command            | Description                          |
+| ------------------ | ------------------------------------ |
+| `pnpm run lint`    | Run ESLint on the docs site code     |
+| `pnpm run format`  | Format docs site code using Prettier |
+| `pnpm run dev`     | Start Astro in development mode      |
+| `pnpm run build`   | Build the Astro site for production  |
+| `pnpm run preview` | Preview the built Astro site         |
+| `pnpm run astro`   | Run Astro CLI                        |
