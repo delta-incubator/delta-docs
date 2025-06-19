@@ -35,3 +35,9 @@ The docs site is build on [Astro](https://astro.build/). Using pnpm, you can run
 | `pnpm run build`   | Build the Astro site for production  |
 | `pnpm run preview` | Preview the built Astro site         |
 | `pnpm run astro`   | Run Astro CLI                        |
+
+## Upgrading dependencies
+
+It's a best practice to make sure that our dependencies are always up to date. You can run `scripts/upgrade-dependencies` to automatically install upgrades.
+
+Do note that you will still need to verify that things work as expected.
