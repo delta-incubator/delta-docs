@@ -16,118 +16,174 @@ Delta Lake supports creating two types of tables—tables defined in the metasto
 
 To work with metastore-defined tables, you must enable integration with Apache Spark DataSourceV2 and Catalog APIs by setting configurations when you create a new `SparkSession`. See [Configure SparkSession](#configure-sparksession).
 
-You can create tables in the following ways.
+You can create tables in the following ways:
 
 - **SQL DDL commands**: You can use standard SQL DDL commands supported in Apache Spark (for example, `CREATE TABLE` and `REPLACE TABLE`) to create Delta tables.
 
-```sql
-CREATE TABLE IF NOT EXISTS default.people10m (
-  id INT,
-  firstName STRING,
-  middleName STRING,
-  lastName STRING,
-  gender STRING,
-  birthDate TIMESTAMP,
-  ssn STRING,
-  salary INT
-) USING DELTA
+    <Tabs syncKey="code-examples">
+      <TabItem label="SQL" active>
 
-CREATE OR REPLACE TABLE default.people10m (
-  id INT,
-  firstName STRING,
-  middleName STRING,
-  lastName STRING,
-  gender STRING,
-  birthDate TIMESTAMP,
-  ssn STRING,
-  salary INT
-) USING DELTA
-```
+        ```sql
+        CREATE TABLE IF NOT EXISTS default.people10m (
+          id INT,
+          firstName STRING,
+          middleName STRING,
+          lastName STRING,
+          gender STRING,
+          birthDate TIMESTAMP,
+          ssn STRING,
+          salary INT
+        ) USING DELTA
 
-SQL also supports creating a table at a path, without creating an entry in the Hive metastore.
+        CREATE OR REPLACE TABLE default.people10m (
+          id INT,
+          firstName STRING,
+          middleName STRING,
+          lastName STRING,
+          gender STRING,
+          birthDate TIMESTAMP,
+          ssn STRING,
+          salary INT
+        ) USING DELTA
+        ```
+      
+      </TabItem>
+    </Tabs>
 
-```sql
--- Create or replace table with path
-CREATE OR REPLACE TABLE delta.`/tmp/delta/people10m` (
-  id INT,
-  firstName STRING,
-  middleName STRING,
-  lastName STRING,
-  gender STRING,
-  birthDate TIMESTAMP,
-  ssn STRING,
-  salary INT
-) USING DELTA
-```
+    SQL also supports creating a table at a path, without creating an entry in the Hive metastore.
+
+    <Tabs syncKey="code-examples">
+      <TabItem label="SQL" active>
+
+        ```sql
+        -- Create or replace table with path
+        CREATE OR REPLACE TABLE delta.`/tmp/delta/people10m` (
+          id INT,
+          firstName STRING,
+          middleName STRING,
+          lastName STRING,
+          gender STRING,
+          birthDate TIMESTAMP,
+          ssn STRING,
+          salary INT
+        ) USING DELTA
+        ```
+      
+      </TabItem>
+    </Tabs>
 
 - **`DataFrameWriter` API**: If you want to simultaneously create a table and insert data into it from Spark DataFrames or Datasets, you can use the Spark `DataFrameWriter` ([Scala or Java](https://spark.apache.org/docs/latest/api/scala/org/apache/spark/sql/DataFrameWriter.html) and [Python](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/io.html)).
 
-<Tabs syncKey="code-examples">
-  <TabItem label="Python">
+    <Tabs syncKey="code-examples">
+      <TabItem label="Python">
 
-    ```python
-    # Create table in the metastore using DataFrame's schema and write data to it
-    df.write.format("delta").saveAsTable("default.people10m")
+        ```python
+        # Create table in the metastore using DataFrame's schema and write data to it
+        df.write.format("delta").saveAsTable("default.people10m")
 
-    # Create or replace partitioned table with path using DataFrame's schema and write/overwrite data to it
-    df.write.format("delta").mode("overwrite").save("/tmp/delta/people10m")
-    ```
+        # Create or replace partitioned table with path using DataFrame's schema and write/overwrite data to it
+        df.write.format("delta").mode("overwrite").save("/tmp/delta/people10m")
+        ```
 
-  </TabItem>
-  <TabItem label="Scala">
+      </TabItem>
+      <TabItem label="Scala">
 
-    ```scala
-    // Create table in the metastore using DataFrame's schema and write data to it
-    df.write.format("delta").saveAsTable("default.people10m")
+        ```scala
+        // Create table in the metastore using DataFrame's schema and write data to it
+        df.write.format("delta").saveAsTable("default.people10m")
 
-    // Create table with path using DataFrame's schema and write data to it
-    df.write.format("delta").mode("overwrite").save("/tmp/delta/people10m")
-    ```
+        // Create table with path using DataFrame's schema and write data to it
+        df.write.format("delta").mode("overwrite").save("/tmp/delta/people10m")
+        ```
 
-  </TabItem>
-</Tabs>
+      </TabItem>
+    </Tabs>
 
-You can also create Delta tables using the Spark `DataFrameWriterV2` API.
+    You can also create Delta tables using the Spark `DataFrameWriterV2` API.
 
 - **`DeltaTableBuilder` API**: You can also use the `DeltaTableBuilder` API in Delta Lake to create tables. Compared to the DataFrameWriter APIs, this API makes it easier to specify additional information like column comments, table properties, and [generated columns](#use-generated-columns).
 
-<Tabs syncKey="code-examples">
-  <TabItem label="Python">
-    ```python
-    DeltaTable.createIfNotExists(spark) \
-      .tableName("default.people10m") \
-      .addColumn("id", "INT") \
-      .addColumn("firstName", "STRING") \
-      .addColumn("middleName", "STRING") \
-      .addColumn("lastName", "STRING", comment = "surname") \
-      .addColumn("gender", "STRING") \
-      .addColumn("birthDate", "TIMESTAMP") \
-      .addColumn("ssn", "STRING") \
-      .addColumn("salary", "INT") \
-      .execute()
-    ```
-  </TabItem>
-  <TabItem label="Scala">
-    ```scala
-    DeltaTable.createOrReplace(spark)
-      .tableName("default.people10m")
-      .addColumn("id", "INT")
-      .addColumn("firstName", "STRING")
-      .addColumn("middleName", "STRING")
-      .addColumn(
-        DeltaTable.columnBuilder("lastName")
-          .dataType("STRING")
-          .comment("surname")
-          .build())
-      .addColumn("lastName", "STRING", comment = "surname")
-      .addColumn("gender", "STRING")
-      .addColumn("birthDate", "TIMESTAMP")
-      .addColumn("ssn", "STRING")
-      .addColumn("salary", "INT")
-      .execute()
-    ```
-  </TabItem>
-</Tabs>
+    <Aside type="note">
+
+      This feature is new and is in Preview.
+
+      <Tabs syncKey="code-examples">
+        <TabItem label="Python">
+          
+          ```python
+          # Create table in the metastore
+          DeltaTable.createIfNotExists(spark) \
+            .tableName("default.people10m") \
+            .addColumn("id", "INT") \
+            .addColumn("firstName", "STRING") \
+            .addColumn("middleName", "STRING") \
+            .addColumn("lastName", "STRING", comment = "surname") \
+            .addColumn("gender", "STRING") \
+            .addColumn("birthDate", "TIMESTAMP") \
+            .addColumn("ssn", "STRING") \
+            .addColumn("salary", "INT") \
+            .execute()
+
+          # Create or replace table with path and add properties
+          DeltaTable.createOrReplace(spark) \
+            .addColumn("id", "INT") \
+            .addColumn("firstName", "STRING") \
+            .addColumn("middleName", "STRING") \
+            .addColumn("lastName", "STRING", comment = "surname") \
+            .addColumn("gender", "STRING") \
+            .addColumn("birthDate", "TIMESTAMP") \
+            .addColumn("ssn", "STRING") \
+            .addColumn("salary", "INT") \
+            .property("description", "table with people data") \
+            .location("/tmp/delta/people10m") \
+            .execute()
+          ```
+
+        </TabItem>
+        <TabItem label="Scala">
+
+          ```scala
+          // Create table in the metastore
+          DeltaTable.createOrReplace(spark)
+            .tableName("default.people10m")
+            .addColumn("id", "INT")
+            .addColumn("firstName", "STRING")
+            .addColumn("middleName", "STRING")
+            .addColumn(
+              DeltaTable.columnBuilder("lastName")
+                .dataType("STRING")
+                .comment("surname")
+                .build())
+            .addColumn("lastName", "STRING", comment = "surname")
+            .addColumn("gender", "STRING")
+            .addColumn("birthDate", "TIMESTAMP")
+            .addColumn("ssn", "STRING")
+            .addColumn("salary", "INT")
+            .execute()
+
+          // Create or replace table with path and add properties
+          DeltaTable.createOrReplace(spark)
+            .addColumn("id", "INT")
+            .addColumn("firstName", "STRING")
+            .addColumn("middleName", "STRING")
+            .addColumn(
+              DeltaTable.columnBuilder("lastName")
+                .dataType("STRING")
+                .comment("surname")
+                .build())
+            .addColumn("lastName", "STRING", comment = "surname")
+            .addColumn("gender", "STRING")
+            .addColumn("birthDate", "TIMESTAMP")
+            .addColumn("ssn", "STRING")
+            .addColumn("salary", "INT")
+            .property("description", "table with people data")
+            .location("/tmp/delta/people10m")
+            .execute()
+          ```
+
+        </TabItem>
+      </Tabs>
+    </Aside>
 
 See the [API documentation](/delta-apidoc/) for details.
 
@@ -206,22 +262,25 @@ To determine whether a table contains a specific partition, use the statement `S
 
 <Tabs syncKey="code-examples">
   <TabItem label="SQL">
+
     ```sql
-    SELECT COUNT(*) > 0 AS `Partition exists` FROM default.people10m
-    WHERE gender = "M"
+    SELECT COUNT(*) > 0 AS `Partition exists` FROM default.people10m WHERE gender = "M"
     ```
+
   </TabItem>
   <TabItem label="Python">
+
     ```python
-    display(spark.sql("SELECT COUNT(*) > 0 AS `Partition exists` FROM
-    default.people10m WHERE gender = 'M'"))
+    display(spark.sql("SELECT COUNT(*) > 0 AS `Partition exists` FROM default.people10m WHERE gender = 'M'"))
     ```
+
   </TabItem>
   <TabItem label="Scala">
+
     ```scala
-    display(spark.sql("SELECT COUNT(*) > 0 AS `Partition exists` FROM
-    default.people10m WHERE gender = 'M'"))
+    display(spark.sql("SELECT COUNT(*) > 0 AS `Partition exists` FROM default.people10m WHERE gender = 'M'"))
     ```
+
   </TabItem>
 </Tabs>
 
@@ -233,11 +292,17 @@ When you run `CREATE TABLE` with a `LOCATION` that _already_ contains data store
 
 - If you specify _only the table name and location_, for example:
 
-  ```sql
-  CREATE TABLE default.people10m
-  USING DELTA
-  LOCATION '/tmp/delta/people10m'
-  ```
+  <Tabs syncKey="code-examples">
+    <TabItem label="SQL" active>
+
+      ```sql
+      CREATE TABLE default.people10m
+      USING DELTA
+      LOCATION '/tmp/delta/people10m'
+      ```
+    
+    </TabItem>
+  </Tabs>
 
   the table in the metastore automatically inherits the schema, partitioning, and table properties of the existing data. This functionality can be used to "import" data into the metastore.
 
@@ -349,52 +414,76 @@ Delta Lake may be able to generate partition filters for a query whenever a part
 - Four partition columns defined by `YEAR(col), MONTH(col), DAY(col), HOUR(col)` and the type of `col` is `TIMESTAMP`.
 - `SUBSTRING(col, pos, len)` and the type of `col` is `STRING`
 - `DATE_FORMAT(col, format)` and the type of `col` is `TIMESTAMP`.
-- `DATE_TRUNC(format, col) and the type of the `col`is`TIMESTAMP`or`DATE`.
+- `DATE_TRUNC(format, col)` and the type of the `col` is `TIMESTAMP` or `DATE`.
 - `TRUNC(col, format)` and type of the `col` is either `TIMESTAMP` or `DATE`.
 
 If a partition column is defined by one of the preceding expressions, and a query filters data using the underlying base column of a generation expression, Delta Lake looks at the relationship between the base column and the generated column, and populates partition filters based on the generated partition column if possible. For example, given the following table:
 
-```python
-DeltaTable.create(spark) \
-  .tableName("default.events") \
-  .addColumn("eventId", "BIGINT") \
-  .addColumn("data", "STRING") \
-  .addColumn("eventType", "STRING") \
-  .addColumn("eventTime", "TIMESTAMP") \
-  .addColumn("eventDate", "DATE", generatedAlwaysAs="CAST(eventTime AS DATE)") \
-  .partitionedBy("eventType", "eventDate") \
-  .execute()
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="Python" active>
+
+    ```python
+    DeltaTable.create(spark) \
+      .tableName("default.events") \
+      .addColumn("eventId", "BIGINT") \
+      .addColumn("data", "STRING") \
+      .addColumn("eventType", "STRING") \
+      .addColumn("eventTime", "TIMESTAMP") \
+      .addColumn("eventDate", "DATE", generatedAlwaysAs="CAST(eventTime AS DATE)") \
+      .partitionedBy("eventType", "eventDate") \
+      .execute()
+    ```
+  
+  </TabItem>
+</Tabs>
 
 If you then run the following query:
 
-```python
-spark.sql('SELECT * FROM default.events WHERE eventTime >= "2020-10-01 00:00:00" <= "2020-10-01 12:00:00"')
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="Python" active>
+
+    ```python
+    spark.sql('SELECT * FROM default.events WHERE eventTime >= "2020-10-01 00:00:00" <= "2020-10-01 12:00:00"')
+    ```
+  
+  </TabItem>
+</Tabs>
 
 Delta Lake automatically generates a partition filter so that the preceding query only reads the data in partition `date=2020-10-01` even if a partition filter is not specified.
 
 As another example, given the following table:
 
-```python
-DeltaTable.create(spark) \
-  .tableName("default.events") \
-  .addColumn("eventId", "BIGINT") \
-  .addColumn("data", "STRING") \
-  .addColumn("eventType", "STRING") \
-  .addColumn("eventTime", "TIMESTAMP") \
-  .addColumn("year", "INT", generatedAlwaysAs="YEAR(eventTime)") \
-  .addColumn("month", "INT", generatedAlwaysAs="MONTH(eventTime)") \
-  .addColumn("day", "INT", generatedAlwaysAs="DAY(eventTime)") \
-  .partitionedBy("eventType", "year", "month", "day") \
-  .execute()
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="Python" active>
+
+    ```python
+    DeltaTable.create(spark) \
+      .tableName("default.events") \
+      .addColumn("eventId", "BIGINT") \
+      .addColumn("data", "STRING") \
+      .addColumn("eventType", "STRING") \
+      .addColumn("eventTime", "TIMESTAMP") \
+      .addColumn("year", "INT", generatedAlwaysAs="YEAR(eventTime)") \
+      .addColumn("month", "INT", generatedAlwaysAs="MONTH(eventTime)") \
+      .addColumn("day", "INT", generatedAlwaysAs="DAY(eventTime)") \
+      .partitionedBy("eventType", "year", "month", "day") \
+      .execute()
+    ```
+  
+  </TabItem>
+</Tabs>
 
 If you then run the following query:
 
-```python
-spark.sql('SELECT * FROM default.events WHERE eventTime >= "2020-10-01 00:00:00" <= "2020-10-01 12:00:00"')
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="Python" active>
+
+    ```python
+    spark.sql('SELECT * FROM default.events WHERE eventTime >= "2020-10-01 00:00:00" <= "2020-10-01 12:00:00"')
+    ```
+  
+  </TabItem>
+</Tabs>
 
 Delta Lake automatically generates a partition filter so that the preceding query only reads the data in partition `year=2020/month=10/day=01` even if a partition filter is not specified.
 
@@ -460,10 +549,7 @@ Delta Lake identity columns are supported in Delta Lake 3.3 and above. They are 
   </TabItem>
 </Tabs>
 
-<Aside
-  type="caution"
-  title="Important"
->
+<Aside type="note">
   SQL APIs for identity columns are not supported yet.
 </Aside>
 
@@ -582,7 +668,7 @@ The following limitations exist when working with identity columns:
 
 ### Specify default values for columns
 
-Delta enables the specification of [default expressions](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#default-columns) for columns in Delta tables. When users write to these tables without explicitly providing values for certain columns, or when they explicitly use the DEFAULT SQL keyword for a column, Delta automatically generates default values for those columns. For more information, please refer to the dedicated documentation page.
+Delta enables the specification of [default expressions](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#default-columns) for columns in Delta tables. When users write to these tables without explicitly providing values for certain columns, or when they explicitly use the `DEFAULT` SQL keyword for a column, Delta automatically generates default values for those columns. For more information, please refer to the dedicated documentation page.
 
 ### Use special characters in column names
 
@@ -598,8 +684,8 @@ Delta Lake configurations set in the SparkSession override the default [table pr
 
 For example, to set the `delta.appendOnly = true` property for all new Delta Lake tables created in a session, set the following:
 
-```python
-spark.conf.set("spark.databricks.delta.properties.defaults.appendOnly", "true")
+```sql
+SET spark.databricks.delta.properties.defaults.appendOnly = true
 ```
 
 ## Read a table
@@ -610,27 +696,27 @@ You can load a Delta table as a DataFrame by specifying a table name or a path:
   <TabItem label="SQL" active>
 
     ```sql
-    SELECT * FROM default.people10m   -- query table in the metastore
+    SELECT * FROM default.people10m -- query table in the metastore
 
-    SELECT * FROM delta.`/tmp/delta/people10m`  -- query table by path
+    SELECT * FROM delta.`/tmp/delta/people10m` -- query table by path
     ```
 
   </TabItem>
   <TabItem label="Python">
 
     ```python
-    spark.table("default.people10m")    # query table in the metastore
+    spark.table("default.people10m") # query table in the metastore
 
-    spark.read.format("delta").load("/tmp/delta/people10m")  # query table by path
+    spark.read.format("delta").load("/tmp/delta/people10m") # query table by path
     ```
 
   </TabItem>
   <TabItem label="Scala">
 
     ```scala
-    spark.table("default.people10m")      // query table in the metastore
+    spark.table("default.people10m") // query table in the metastore
 
-    spark.read.format("delta").load("/tmp/delta/people10m")  // create table by path
+    spark.read.format("delta").load("/tmp/delta/people10m") // create table by path
 
     import io.delta.implicits._
     spark.read.delta("/tmp/delta/people10m")
@@ -646,11 +732,8 @@ The DataFrame returned automatically reads the most recent snapshot of the table
 Delta Lake time travel allows you to query an older snapshot of a Delta table. Time travel has many use cases, including:
 
 - Re-creating analyses, reports, or outputs (for example, the output of a machine learning model). This could be useful for debugging or auditing, especially in regulated industries.
-
 - Writing complex temporal queries.
-
 - Fixing mistakes in your data.
-
 - Providing snapshot isolation for a set of queries for fast changing tables.
 
 This section describes the supported methods for querying older versions of tables, data retention concerns, and provides examples.
@@ -668,10 +751,16 @@ This section shows how to query an older version of a Delta table.
 
 #### SQL `AS OF` syntax
 
-```sql
-SELECT * FROM table_name TIMESTAMP AS OF timestamp_expression
-SELECT * FROM table_name VERSION AS OF version
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
+
+    ```sql
+    SELECT * FROM table_name TIMESTAMP AS OF timestamp_expression
+    SELECT * FROM table_name VERSION AS OF version
+    ```
+  
+  </TabItem>
+</Tabs>
 
 - `timestamp_expression` can be any one of:
 
@@ -686,21 +775,33 @@ SELECT * FROM table_name VERSION AS OF version
 
 Neither `timestamp_expression` nor `version` can be subqueries.
 
-### Example
+##### Example
 
-```sql
-SELECT * FROM default.people10m TIMESTAMP AS OF '2018-10-18T22:15:12.013Z'
-SELECT * FROM delta.`/tmp/delta/people10m` VERSION AS OF 123
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
+
+    ```sql
+    SELECT * FROM default.people10m TIMESTAMP AS OF '2018-10-18T22:15:12.013Z'
+    SELECT * FROM delta.`/tmp/delta/people10m` VERSION AS OF 123
+    ```
+  
+  </TabItem>
+</Tabs>
 
 #### DataFrameReader options
 
 DataFrameReader options allow you to create a DataFrame from a Delta table that is fixed to a specific version of the table.
 
-```python
-df1 = spark.read.format("delta").option("timestampAsOf", timestamp_string).load("/tmp/delta/people10m")
-df2 = spark.read.format("delta").option("versionAsOf", version).load("/tmp/delta/people10m")
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="Python" active>
+
+    ```python
+    df1 = spark.read.format("delta").option("timestampAsOf", timestamp_string).load("/tmp/delta/people10m")
+    df2 = spark.read.format("delta").option("versionAsOf", version).load("/tmp/delta/people10m")
+    ```
+
+  </TabItem>
+</Tabs>
 
 For `timestamp_string`, only date or timestamp strings are accepted. For example, `"2019-01-01"` and `"2019-01-01T00:00:00.000Z"`.
 
@@ -708,51 +809,76 @@ A common pattern is to use the latest state of the Delta table throughout the ex
 
 Because Delta tables auto update, a DataFrame loaded from a Delta table may return different results across invocations if the underlying data is updated. By using time travel, you can fix the data returned by the DataFrame across invocations:
 
-```python
-history = spark.sql("DESCRIBE HISTORY delta.`/tmp/delta/people10m`")
-latest_version = history.selectExpr("max(version)").collect()
-df = spark.read.format("delta").option("versionAsOf", latest_version[0][0]).load("/tmp/delta/people10m")
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="Python" active>
 
-#### Examples
+    ```python
+    history = spark.sql("DESCRIBE HISTORY delta.`/tmp/delta/people10m`")
+    latest_version = history.selectExpr("max(version)").collect()
+    df = spark.read.format("delta").option("versionAsOf", latest_version[0][0]).load("/tmp/delta/people10m")
+    ```
+
+  </TabItem>
+</Tabs>
+
+##### Examples
 
 - Fix accidental deletes to a table for the user 111:
 
-  ```python
-  yesterday = spark.sql("SELECT CAST(date_sub(current_date(), 1) AS STRING)").collect()[0][0]
-  df = spark.read.format("delta").option("timestampAsOf", yesterday).load("/tmp/delta/events")
-  df.where("userId = 111").write.format("delta").mode("append").save("/tmp/delta/events")
-  ```
+  <Tabs syncKey="code-examples">
+    <TabItem label="Python" active>
+
+      ```python
+      yesterday = spark.sql("SELECT CAST(date_sub(current_date(), 1) AS STRING)").collect()[0][0]
+      df = spark.read.format("delta").option("timestampAsOf", yesterday).load("/tmp/delta/events")
+      df.where("userId = 111").write.format("delta").mode("append").save("/tmp/delta/events")
+      ```
+    
+    </TabItem>
+  </Tabs>
+
 
 - Fix accidental incorrect updates to a table:
 
-  ```python
-  yesterday = spark.sql("SELECT CAST(date_sub(current_date(), 1) AS STRING)").collect()[0][0]
-  df = spark.read.format("delta").option("timestampAsOf", yesterday).load("/tmp/delta/events")
-  df.createOrReplaceTempView("my_table_yesterday")
-  spark.sql('''
-  MERGE INTO delta.`/tmp/delta/events` target
-    USING my_table_yesterday source
-    ON source.userId = target.userId
-    WHEN MATCHED THEN UPDATE SET *
-  ''')
-  ```
+  <Tabs syncKey="code-examples">
+    <TabItem label="Python" active>
+
+      ```python
+      yesterday = spark.sql("SELECT CAST(date_sub(current_date(), 1) AS STRING)").collect()[0][0]
+      df = spark.read.format("delta").option("timestampAsOf", yesterday).load("/tmp/delta/events")
+      df.createOrReplaceTempView("my_table_yesterday")
+      spark.sql('''
+      MERGE INTO delta.`/tmp/delta/events` target
+        USING my_table_yesterday source
+        ON source.userId = target.userId
+        WHEN MATCHED THEN UPDATE SET *
+      ''')
+      ```
+    
+    </TabItem>
+  </Tabs>
 
 - Query the number of new customers added over the last week:
 
-  ```python
-  last_week = spark.sql("SELECT CAST(date_sub(current_date(), 7) AS STRING)").collect()[0][0]
-  df = spark.read.format("delta").option("timestampAsOf", last_week).load("/tmp/delta/events")
-  last_week_count = df.select("userId").distinct().count()
-  count = spark.read.format("delta").load("/tmp/delta/events").select("userId").distinct().count()
-  new_customers_count = count - last_week_count
-  ```
+  <Tabs syncKey="code-examples">
+    <TabItem label="Python" active>
+
+      ```python
+      last_week = spark.sql("SELECT CAST(date_sub(current_date(), 7) AS STRING)").collect()[0][0]
+      df = spark.read.format("delta").option("timestampAsOf", last_week).load("/tmp/delta/events")
+      last_week_count = df.select("userId").distinct().count()
+      count = spark.read.format("delta").load("/tmp/delta/events").select("userId").distinct().count()
+      new_customers_count = count - last_week_count
+      ```
+    
+    </TabItem>
+  </Tabs>
 
 ### Data retention
 
 To time travel to a previous version, you must retain _both_ the log and the data files for that version.
 
-The data files backing a Delta table are _never_ deleted automatically; data files are deleted only when you run [VACUUM](/delta-utility/#vacuum). `VACUUM` _does not_ delete Delta log files; log files are automatically cleaned up after checkpoints are written.
+The data files backing a Delta table are _never_ deleted automatically; data files are deleted only when you run [VACUUM](/delta-utility#remove-files-no-longer-referenced-by-a-delta-table). `VACUUM` _does not_ delete Delta log files; log files are automatically cleaned up after checkpoints are written.
 
 By default you can time travel to a Delta table up to 30 days old unless you have:
 
@@ -776,47 +902,6 @@ Each time a checkpoint is written, Delta automatically cleans up log entries old
   Increasing the table property `delta.logRetentionDuration` can help avoid
   these situations.
 </Aside>
-
-### In-Commit Timestamps
-
-#### Overview
-
-Delta Lake 3.3 introduced [In-Commit Timestamps](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#in-commit-timestamps) to provide a more reliable and consistent way to track table modification timestamps. These modification timestamps are needed for various usecases e.g. time-travel to a specific time in the past. This feature addresses limitations of the traditional approach that relied on file modification timestamps, particularly in scenarios involving data migration or replication.
-
-#### Feature Details
-
-In-Commit Timestamps stores modification timestamps within the commit itself, ensuring they remain unchanged regardless of file system operations. This provides several benefits:
-
-- **Immutable History**: Timestamps become part of the table's permanent commit history
-- **Consistent Time Travel**: Queries using timestamp-based time travel produce reliable results even after table migration
-
-Without the In-Commit Timestamp feature, Delta Lake uses file modification timestamps as the commit timestamp. This approach has various limitations:
-
-1. Data Migration Issues: When tables were moved between storage locations, file modification timestamps would change, potentially disrupting historical tracking
-2. Replication Scenarios: Timestamp inconsistencies could arise when replicating data across different environments
-3. Time Travel Reliability: These timestamp changes could affect the accuracy and consistency of time travel queries
-
-#### Enabling the Feature
-
-This is a [writer table feature](/apache-spark-connector/versioning/#-what-are-table-features) and can be enabled by setting the table property `delta.enableInCommitTimestamps` to `true`:
-
-<Tabs syncKey="code-examples">
-  <TabItem label="SQL">
-
-    ```sql
-    ALTER TABLE <table_name>
-    SET TBLPROPERTIES ('delta.enableInCommitTimestamps' = 'true');
-    ```
-
-  </TabItem>
-</Tabs>
-
-After enabling In-Commit Timestamps:
-
-- Only new write operations will include the embedded timestamps
-- File modification timestamps will continued to be used for historical commits performed before enablement
-
-See the [Versioning](/apache-spark-connector/versioning) section for more details around compatibility.
 
 ## Write to table
 
@@ -897,7 +982,14 @@ You can selectively overwrite only the data that matches an arbitrary expression
 The following command atomically replaces events in January in the target table, which is partitioned by `start_date`, with the data in `replace_data`:
 
 <Tabs syncKey="code-examples">
-  <TabItem label="Python" active>
+  <TabItem label="SQL" active>
+
+    ```sql
+    INSERT INTO TABLE events REPLACE WHERE start_data >= '2017-01-01' AND end_date <= '2017-01-31' SELECT * FROM replace_data
+    ```
+
+  </TabItem>
+  <TabItem label="Python">
 
     ```python
     replace_data.write \
@@ -919,22 +1011,19 @@ The following command atomically replaces events in January in the target table,
     ```
 
   </TabItem>
-  <TabItem label="SQL">
-
-    ```sql
-    INSERT INTO TABLE events REPLACE WHERE start_data >= '2017-01-01' AND end_date <= '2017-01-31' SELECT * FROM replace_data
-    ```
-
-  </TabItem>
 </Tabs>
 
 This sample code writes out the data in `replace_data`, validates that it all matches the predicate, and performs an atomic replacement. If you want to write out data that doesn't all match the predicate, to replace the matching rows in the target table, you can disable the constraint check by setting `spark.databricks.delta.replaceWhere.constraintCheck.enabled` to false:
 
 <Tabs syncKey="code-examples">
-  <TabItem
-    label="Python"
-    active
-  >
+  <TabItem label="SQL" active>
+
+    ```sql
+    SET spark.databricks.delta.replaceWhere.constraintCheck.enabled=false
+    ```
+
+  </TabItem>
+  <TabItem label="Python">
 
     ```python
     spark.conf.set("spark.databricks.delta.replaceWhere.constraintCheck.enabled", False)
@@ -945,13 +1034,6 @@ This sample code writes out the data in `replace_data`, validates that it all ma
 
     ```scala
     spark.conf.set("spark.databricks.delta.replaceWhere.constraintCheck.enabled", false)
-    ```
-
-  </TabItem>
-  <TabItem label="SQL">
-
-    ```sql
-    SET spark.databricks.delta.replaceWhere.constraintCheck.enabled=false
     ```
 
   </TabItem>
@@ -987,10 +1069,14 @@ In Delta Lake 1.0.0 and below, `replaceWhere` overwrites data matching a predica
 In Delta Lake 1.1.0 and above, if you want to fall back to the old behavior, you can disable the `spark.databricks.delta.replaceWhere.dataColumns.enabled` flag:
 
 <Tabs syncKey="code-examples">
-  <TabItem
-    label="Python"
-    active
-  >
+  <TabItem label="SQL" active>
+
+    ```sql
+    SET spark.databricks.delta.replaceWhere.dataColumns.enabled=false
+    ```
+
+  </TabItem>
+  <TabItem label="Python">
 
     ```python
     spark.conf.set("spark.databricks.delta.replaceWhere.dataColumns.enabled", False)
@@ -1000,13 +1086,6 @@ In Delta Lake 1.1.0 and above, if you want to fall back to the old behavior, you
   <TabItem label="Scala">
     ```scala
     spark.conf.set("spark.databricks.delta.replaceWhere.dataColumns.enabled", false)
-    ```
-
-  </TabItem>
-  <TabItem label="SQL">
-
-    ```sql
-    SET spark.databricks.delta.replaceWhere.dataColumns.enabled=false
     ```
 
   </TabItem>
@@ -1121,7 +1200,7 @@ The above combination of options needs to be unique for each new data that is be
 
 You can also configure idempotent writes by setting the Spark session configuration `spark.databricks.delta.write.txnAppId` and `spark.databricks.delta.write.txnVersion`. In addition, you can set `spark.databricks.delta.write.txnVersion.autoReset.enabled` to true to automatically reset `spark.databricks.delta.write.txnVersion` after every write. When both the writer options and session configuration are set, we will use the writer option values.
 
-<Aside type="caution">
+<Aside type="danger" title="Warning">
 
 This solution assumes that the data being written to Delta table(s) in multiple retries of the job is same. If a write attempt in a Delta table succeeds but due to some downstream failure there is a second write attempt with same txn options but different data, then that second write attempt will be ignored. This can cause unexpected results.
 
@@ -1130,38 +1209,35 @@ This solution assumes that the data being written to Delta table(s) in multiple 
 #### Example
 
 <Tabs syncKey="code-examples">
-  <TabItem
-    label="Python"
-    active
-  >
+  <TabItem label="SQL" active>
+
+    ```sql
+    SET spark.databricks.delta.write.txnAppId = ...;
+    SET spark.databricks.delta.write.txnVersion = ...;
+    SET spark.databricks.delta.write.txnVersion.autoReset.enabled = true; -- if set to true, this will reset txnVersion after every write
+    ```
+
+  </TabItem>
+  <TabItem label="Python">
   
-  ```python
-  app_id = ... # A unique string that is used as an application ID.
-  version = ... # A monotonically increasing number that acts as transaction version.
+    ```python
+    app_id = ... # A unique string that is used as an application ID.
+    version = ... # A monotonically increasing number that acts as transaction version.
 
-  dataFrame.write.format(...).option("txnVersion", version).option("txnAppId", app_id).save(...)
-  ```
+    dataFrame.write.format(...).option("txnVersion", version).option("txnAppId", app_id).save(...)
+    ```
 
-</TabItem>
-<TabItem label="Scala">
+  </TabItem>
+  <TabItem label="Scala">
 
-  ```scala
-  val appId = ... // A unique string that is used as an application ID.
-  version = ... // A monotonically increasing number that acts as transaction version.
+    ```scala
+    val appId = ... // A unique string that is used as an application ID.
+    version = ... // A monotonically increasing number that acts as transaction version.
 
-  dataFrame.write.format(...).option("txnVersion", version).option("txnAppId", appId).save(...)
-  ```
+    dataFrame.write.format(...).option("txnVersion", version).option("txnAppId", appId).save(...)
+    ```
 
-</TabItem>
-<TabItem label="SQL">
-
-  ```sql
-  SET spark.databricks.delta.write.txnAppId = ...;
-  SET spark.databricks.delta.write.txnVersion = ...;
-  SET spark.databricks.delta.write.txnVersion.autoReset.enabled = true; -- if set to true, this will reset txnVersion after every write
-  ```
-
-</TabItem>
+  </TabItem>
 </Tabs>
 
 ### Set user-defined commit metadata
@@ -1207,9 +1283,7 @@ You can specify user-defined strings as metadata in commits made by these operat
 Delta Lake automatically validates that the schema of the DataFrame being written is compatible with the schema of the table. Delta Lake uses the following rules to determine whether a write from a DataFrame to a table is compatible:
 
 - All DataFrame columns must exist in the target table. If there are columns in the DataFrame not present in the table, an exception is raised. Columns present in the table but not in the DataFrame are set to null.
-
 - DataFrame column data types must match the column data types in the target table. If they don't match, an exception is raised.
-
 - DataFrame column names cannot differ only by case. This means that you cannot have columns such as "Foo" and "foo" defined in the same table. While you can use Spark in case sensitive or insensitive (default) mode, Parquet is case sensitive when storing and returning column information. Delta Lake is case-preserving but insensitive when storing the schema and has this restriction to avoid potential mistakes, data corruption, or loss issues.
 
 Delta Lake support DDL to add new columns explicitly and the ability to update schema automatically.
@@ -1225,11 +1299,8 @@ Delta Lake lets you update the schema of a table. The following types of changes
 
 You can make these changes explicitly using DDL or implicitly using DML.
 
-<Aside
-type="caution"
-title="Important"
->
-When you update a Delta table schema, streams that read from that table
+<Aside type="caution" title="Important">
+  When you update a Delta table schema, streams that read from that table
 terminate. If you want the stream to continue you must restart it.
 </Aside>
 
@@ -1239,19 +1310,31 @@ You can use the following DDL to explicitly change the schema of a table.
 
 #### Add columns
 
-```sql
-ALTER TABLE table_name ADD COLUMNS (col_name data_type [COMMENT col_comment] [FIRST|AFTER colA_name], ...)
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
+
+    ```sql
+    ALTER TABLE table_name ADD COLUMNS (col_name data_type [COMMENT col_comment] [FIRST|AFTER colA_name], ...)
+    ```
+  
+  </TabItem>
+</Tabs>
 
 By default, nullability is `true`.
 
 To add a column to a nested field, use:
 
-```sql
-ALTER TABLE table_name ADD COLUMNS (col_name.nested_col_name data_type [COMMENT col_comment] [FIRST|AFTER colA_name], ...)
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
 
-#### Example
+    ```sql
+    ALTER TABLE table_name ADD COLUMNS (col_name.nested_col_name data_type [COMMENT col_comment] [FIRST|AFTER colA_name], ...)
+    ```
+  
+  </TabItem>
+</Tabs>
+
+##### Example
 
 If the schema before running `ALTER TABLE boxes ADD COLUMNS (colB.nested STRING AFTER field1)` is:
 
@@ -1281,17 +1364,29 @@ the schema after is:
 
 #### Change column comment or ordering
 
-```sql
-ALTER TABLE table_name ALTER [COLUMN] col_name col_name data_type [COMMENT col_comment] [FIRST|AFTER colA_name]
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
+
+    ```sql
+    ALTER TABLE table_name ALTER [COLUMN] col_name col_name data_type [COMMENT col_comment] [FIRST|AFTER colA_name]
+    ```
+  
+  </TabItem>
+</Tabs>
 
 To change a column in a nested field, use:
 
-```sql
-ALTER TABLE table_name ALTER [COLUMN] col_name.nested_col_name nested_col_name data_type [COMMENT col_comment] [FIRST|AFTER colA_name]
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
 
-#### Example
+    ```sql
+    ALTER TABLE table_name ALTER [COLUMN] col_name.nested_col_name nested_col_name data_type [COMMENT col_comment] [FIRST|AFTER colA_name]
+    ```
+  
+  </TabItem>
+</Tabs>
+
+##### Example
 
 If the schema before running `ALTER TABLE boxes CHANGE COLUMN colB.field2 field2 STRING FIRST` is:
 
@@ -1315,17 +1410,29 @@ the schema after is:
 
 #### Replace columns
 
-```sql
-ALTER TABLE table_name REPLACE COLUMNS (col_name1 col_type1 [COMMENT col_comment1], ...)
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
 
-#### Example
+    ```sql
+    ALTER TABLE table_name REPLACE COLUMNS (col_name1 col_type1 [COMMENT col_comment1], ...)
+    ```
+  
+  </TabItem>
+</Tabs>
+
+##### Example
 
 When running the following DDL:
 
-```sql
-ALTER TABLE boxes REPLACE COLUMNS (colC STRING, colB STRUCT<field2:STRING, nested:STRING, field1:STRING>, colA STRING)
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
+
+    ```sql
+    ALTER TABLE boxes REPLACE COLUMNS (colC STRING, colB STRUCT<field2:STRING, nested:STRING, field1:STRING>, colA STRING)
+    ```
+  
+  </TabItem>
+</Tabs>
 
 if the schema before is:
 
@@ -1360,17 +1467,29 @@ To rename columns without rewriting any of the columns' existing data, you must 
 
 To rename a column:
 
-```sql
-ALTER TABLE table_name RENAME COLUMN old_col_name TO new_col_name
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
+
+    ```sql
+    ALTER TABLE table_name RENAME COLUMN old_col_name TO new_col_name
+    ```
+
+  </TabItem>
+</Tabs>
 
 To rename a nested field:
 
-```sql
-ALTER TABLE table_name RENAME COLUMN col_name.old_nested_field TO new_nested_field
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
 
-#### Example
+    ```sql
+    ALTER TABLE table_name RENAME COLUMN col_name.old_nested_field TO new_nested_field
+    ```
+  
+  </TabItem>
+</Tabs>
+
+##### Example
 
 When you run the following command:
 
@@ -1417,43 +1536,67 @@ To drop columns as a metadata-only operation without rewriting any data files, y
 
 To drop a column:
 
-```sql
-ALTER TABLE table_name DROP COLUMN col_name
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
+
+    ```sql
+    ALTER TABLE table_name DROP COLUMN col_name
+    ```
+  
+  </TabItem>
+</Tabs>
 
 To drop multiple columns:
 
-```sql
-ALTER TABLE table_name DROP COLUMNS (col_name_1, col_name_2)
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL" active>
+
+    ```sql
+    ALTER TABLE table_name DROP COLUMNS (col_name_1, col_name_2)
+    ```
+
+  </TabItem>
+</Tabs>
 
 #### Change column type or name
 
 You can change a column's type or name or drop a column by rewriting the table. To do this, use the `overwriteSchema` option:
 
-#### Change a column type
+##### Change a column type
 
-```python
-spark.read.table(...) \
-  .withColumn("birthDate", col("birthDate").cast("date")) \
-  .write \
-  .format("delta") \
-  .mode("overwrite")
-  .option("overwriteSchema", "true") \
-  .saveAsTable(...)
-```
+<Tabs syncKey="code-examples">
+  <TabItem label="Python" active>
 
-#### Change a column name
+  ```python
+  spark.read.table(...) \
+    .withColumn("birthDate", col("birthDate").cast("date")) \
+    .write \
+    .format("delta") \
+    .mode("overwrite")
+    .option("overwriteSchema", "true") \
+    .saveAsTable(...)
+  ```
 
-```python
-spark.read.table(...) \
-  .withColumnRenamed("dateOfBirth", "birthDate") \
-  .write \
-  .format("delta") \
-  .mode("overwrite") \
-  .option("overwriteSchema", "true") \
-  .saveAsTable(...)
-```
+  </TabItem>
+</Tabs>
+
+##### Change a column name
+
+<Tabs syncKey="code-examples">
+  <TabItem label="Python" active>
+
+  ```python
+  spark.read.table(...) \
+    .withColumnRenamed("dateOfBirth", "birthDate") \
+    .write \
+    .format("delta") \
+    .mode("overwrite") \
+    .option("overwriteSchema", "true") \
+    .saveAsTable(...)
+  ```
+
+  </TabItem>
+</Tabs>
 
 ### Automatic schema update
 
@@ -1476,17 +1619,14 @@ Because Parquet doesn't support `NullType`, `NullType` columns are dropped from 
 
 ## Replace table schema
 
-By default, overwriting the data in a table does not overwrite the schema. When overwriting a table using mode("`overwrite`") without replaceWhere, you may still want to overwrite the schema of the data being written. You replace the schema and partitioning of the table by setting the overwriteSchema option to true:
+By default, overwriting the data in a table does not overwrite the schema. When overwriting a table using mode `overwrite` without `replaceWhere`, you may still want to overwrite the schema of the data being written. You replace the schema and partitioning of the table by setting the `overwriteSchema` option to `true`:
 
 <Tabs syncKey="code-examples">
-  <TabItem
-    label="Python"
-    active
-  >
+  <TabItem label="Python" active>
 
-    ```python
-    df.write.option("overwriteSchema", "true")
-    ```
+  ```python
+  df.write.option("overwriteSchema", "true")
+  ```
 
   </TabItem>
 </Tabs>
@@ -1502,20 +1642,21 @@ The core challenge when you operate with views is resolving the schemas. If you 
 You can store your own metadata as a table property using `TBLPROPERTIES` in `CREATE` and `ALTER`. You can then `SHOW` that metadata. For example:
 
 <Tabs syncKey="code-examples">
-  <TabItem label="SQL">
+  <TabItem label="SQL" active>
 
-    ```sql
-    ALTER TABLE default.people10m SET TBLPROPERTIES ('department' = 'accounting', 'delta.appendOnly' = 'true');
+  ```sql
+  ALTER TABLE default.people10m SET TBLPROPERTIES ('department' = 'accounting', 'delta.appendOnly' = 'true');
 
-    -- Show the table's properties.
-    SHOW TBLPROPERTIES default.people10m;
+  -- Show the table's properties.
+  SHOW TBLPROPERTIES default.people10m;
 
-    -- Show just the 'department' table property.
-    SHOW TBLPROPERTIES default.people10m ('department');
-    ```
+  -- Show just the 'department' table property.
+  SHOW TBLPROPERTIES default.people10m ('department');
+  ```
 
   </TabItem>
 </Tabs>
+
 
 `TBLPROPERTIES` are stored as part of Delta table metadata. You cannot define new `TBLPROPERTIES` in a `CREATE` statement if a Delta table already exists in a given location.
 
@@ -1526,8 +1667,8 @@ In addition, to tailor behavior and performance, Delta Lake supports certain Del
 - Configure the number of columns for which statistics are collected: `delta.dataSkippingNumIndexedCols=n`. This property indicates to the writer that statistics are to be collected only for the first `n` columns in the table. Also the data skipping code ignores statistics for any column beyond this column index. This property takes affect only for new data that is written out.
 
 <Aside type="note">
-  - Modifying a Delta table property is a write operation that will conflict
-  with other concurrent write operations, causing them to fail. We recommend
+  Modifying a Delta table property is a write operation that will conflict
+  with other [concurrent write operations](/concurrency-control), causing them to fail. We recommend
   that you modify a table property only when there are no concurrent write
   operations on the table.
 </Aside>
@@ -1604,23 +1745,6 @@ It supports `SHOW COLUMNS` and `DESCRIBE TABLE`.
 
 It also provides the following unique commands:
 
-<Tabs syncKey="code-examples">
-  <TabItem
-    label="DESCRIBE DETAIL"
-    active
-  >
-    Provides information about schema, partitioning, table size, and so on. For
-    details, see [Retrieve Delta table
-    details](/delta-utility/#retrieve-delta-table-history).
-  </TabItem>
-  <TabItem label="DESCRIBE HISTORY">
-    Provides provenance information, including the operation, user, and so on,
-    and operation metrics for each write to a table. Table history is retained
-    for 30 days. For details, see [Retrieve Delta table
-    history](/delta-utility/#retrieve-delta-table-history).
-  </TabItem>
-</Tabs>
-
 ### `DESCRIBE DETAIL`
 
 Provides information about schema, partitioning, table size, and so on. For details, see [Retrieve Delta table details](/delta-utility/#retrieve-delta-table-history).
@@ -1682,6 +1806,14 @@ For many Delta Lake operations, you enable integration with Apache Spark DataSou
 </Tabs>
 
 Alternatively, you can add configurations when submitting your Spark application using `spark-submit` or when starting `spark-shell` or `pyspark` by specifying them as command-line parameters.
+
+```bash
+spark-submit --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"  ...
+```
+
+```bash
+pyspark --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
+```
 
 ## Configure storage credentials
 
