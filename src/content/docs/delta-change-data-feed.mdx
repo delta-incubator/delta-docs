@@ -3,8 +3,7 @@ title: Change data feed
 description: Learn how to get row-level change information from Delta tables using the Delta change data feed.
 ---
 
-import { Tabs, TabItem } from "@astrojs/starlight/components";
-import { Code, Aside } from "@astrojs/starlight/components";
+import { Aside, Code, Tabs, TabItem } from "@astrojs/starlight/components";
 
 Change Data Feed (CDF) feature allows Delta tables to track row-level changes between versions of a Delta table. When enabled on a Delta table, the runtime records "change events" for all the data written into the table. This includes the row data along with metadata indicating whether the specified row was inserted, deleted, or updated.
 

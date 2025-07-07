@@ -3,7 +3,7 @@ title: How does Delta Lake manage feature compatibility?
 description: Learn how Delta table protocols are versioned.
 ---
 
-import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
+import { Aside, Tabs, TabItem } from "@astrojs/starlight/components";
 
 Many Delta Lake optimizations require enabling Delta Lake features on a table. Delta Lake features are always backwards compatible, so tables written by a lower Delta Lake version can always be read and written by a higher Delta Lake version. Enabling some features breaks forward compatibility with workloads running in a lower Delta Lake version. For features that break forward compatibility, you must update all workloads that reference the upgraded tables to use a compliant Delta Lake version.
 

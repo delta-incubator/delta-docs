@@ -3,9 +3,7 @@ title: Table streaming reads and writes
 description: Learn how to use Delta tables as streaming sources and sinks.
 ---
 
-import { Tabs, TabItem } from "@astrojs/starlight/components";
-import { Code } from "@astrojs/starlight/components";
-import { Aside } from "@astrojs/starlight/components";
+import { Aside, Code, Tabs, TabItem } from "@astrojs/starlight/components";
 import { Image } from "astro:assets";
 
 Delta Lake is deeply integrated with [Spark Structured Streaming](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html) through `readStream` and `writeStream`. Delta Lake overcomes many of the limitations typically associated with streaming systems and files, including:
