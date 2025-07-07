@@ -30,6 +30,7 @@ export default defineConfig({
     "/delta-deletion-vectors.html": "/delta-deletion-vectors",
     "/delta-drop-feature.html": "/delta-drop-feature",
     "/delta-row-tracking.html": "/delta-row-tracking",
+    "/delta-spark-connect.html": "/delta-spark-connect",
     "/delta-storage.html": "/delta-storage",
     "/delta-type-widening.html": "/delta-type-widening",
     "/delta-uniform.html": "/delta-uniform",
@@ -123,6 +124,9 @@ export default defineConfig({
             },
             {
               slug: "delta-row-tracking",
+            },
+            {
+              slug: "delta-spark-connect",
             },
             {
               slug: "delta-storage",
