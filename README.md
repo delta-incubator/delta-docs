@@ -1,3 +1,5 @@
+> [!NOTE] The content in this repo is currently in sync with delta-io/delta@5d40e1829f4f5cb00686e24f7e0bbc94aad5e93b
+
 # Delta Docs
 
 This folder contains all of the source code needed to generate the delta documentation site.
