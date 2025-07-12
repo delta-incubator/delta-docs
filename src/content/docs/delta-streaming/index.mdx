@@ -3,8 +3,7 @@ title: Table streaming reads and writes
 description: Learn how to use Delta tables as streaming sources and sinks.
 ---
 
-import { Aside, Code, Tabs, TabItem } from "@astrojs/starlight/components";
-import { Image } from "astro:assets";
+import { Aside, Tabs, TabItem } from "@astrojs/starlight/components";
 
 Delta Lake is deeply integrated with [Spark Structured Streaming](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html) through `readStream` and `writeStream`. Delta Lake overcomes many of the limitations typically associated with streaming systems and files, including:
 
@@ -19,20 +18,16 @@ For many Delta Lake operations on tables, you enable integration with Apache Spa
 When you load a Delta table as a stream source and use it in a streaming query, the query processes all of the data present in the table as well as any new data that arrives after the stream is started.
 
 <Tabs syncKey="code-examples">
-  <TabItem label="Python">
-    <Code code={`spark.readStream.format("delta") \\
-  .load("/tmp/delta/events")
-
-from delta.tables import \* spark.readStream.delta("/tmp/delta/events")`} lang="python" />
-
-  </TabItem>
-
   <TabItem label="Scala">
-    <Code code={`spark.readStream.format("delta")
-  .load("/tmp/delta/events")
+    
+    ```scala
+    spark.readStream.format("delta")
+      .load("/tmp/delta/events")
 
-import io.delta.implicits._
-spark.readStream.delta("/tmp/delta/events")`} lang="scala" />
+    import io.delta.implicits._
+    spark.readStream.delta("/tmp/delta/events")
+    ```
+
   </TabItem>
 </Tabs>
 
@@ -70,12 +65,13 @@ When you delete at partition boundaries (that is, the `WHERE` is on a partition 
 
 <Tabs>
   <TabItem label="Scala">
-    <Code
-      code={`spark.readStream.format("delta")
-  .option("ignoreDeletes", "true")
-  .load("/tmp/delta/user_events")`}
-      lang="scala"
-    />
+  
+    ```scala
+    spark.readStream.format("delta")
+      .option("ignoreDeletes", "true")
+      .load("/tmp/delta/user_events")
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -83,12 +79,13 @@ However, if you have to delete data based on `user_email`, then you will need to
 
 <Tabs>
   <TabItem label="Scala">
-    <Code
-      code={`spark.readStream.format("delta")
-  .option("ignoreChanges", "true")
-  .load("/tmp/delta/user_events")`}
-      lang="scala"
-    />
+  
+    ```scala
+    spark.readStream.format("delta")
+      .option("ignoreChanges", "true")
+      .load("/tmp/delta/user_events")
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -121,12 +118,13 @@ For example, suppose you have a table `user_events`. If you want to read changes
 
 <Tabs>
   <TabItem label="Scala">
-    <Code
-      code={`spark.readStream.format("delta")
-  .option("startingVersion", "5")
-  .load("/tmp/delta/user_events")`}
-      lang="scala"
-    />
+  
+    ```scala
+    spark.readStream.format("delta")
+      .option("startingVersion", "5")
+      .load("/tmp/delta/user_events")
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -134,12 +132,13 @@ If you want to read changes since 2018-10-18, use:
 
 <Tabs>
   <TabItem label="Scala">
-    <Code
-      code={`spark.readStream.format("delta")
-  .option("startingTimestamp", "2018-10-18")
-  .load("/tmp/delta/user_events")`}
-      lang="scala"
-    />
+  
+    ```scala
+    spark.readStream.format("delta")
+      .option("startingTimestamp", "2018-10-18")
+      .load("/tmp/delta/user_events")
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -176,22 +175,23 @@ Suppose you have a table `user_events` with an `event_time` column. Your streami
 
 <Tabs>
   <TabItem label="Scala">
-    <Code
-      code={`spark.readStream.format("delta")
-  .option("withEventTimeOrder", "true")
-  .load("/tmp/delta/user_events")
-  .withWatermark("event_time", "10 seconds")`}
-      lang="scala"
-    />
+  
+    ```scala
+    spark.readStream.format("delta")
+      .option("withEventTimeOrder", "true")
+      .load("/tmp/delta/user_events")
+      .withWatermark("event_time", "10 seconds")
+    ```
+
   </TabItem>
 </Tabs>
 
 <Aside type="note">
-You can also enable this with Spark config on the cluster which will apply to all streaming queries:
+  You can also enable this with Spark config on the cluster which will apply to all streaming queries:
 
-```
-spark.databricks.delta.withEventTimeOrder.enabled true
-```
+  ```
+  spark.databricks.delta.withEventTimeOrder.enabled true
+  ```
 
 </Aside>
 
@@ -213,12 +213,20 @@ The option `schemaTrackingLocation` is used to specify the path for schema track
 
 <Tabs>
 	<TabItem label="Python">
-		<Code code={`checkpoint_path = "/path/to/checkpointLocation"
 
-(spark.readStream .option("schemaTrackingLocation", checkpoint_path) .table("delta_source_table") .writeStream .option("checkpointLocation", checkpoint_path) .toTable("output_table") )`} lang="python" />
+    ```python
+    checkpoint_path = "/path/to/checkpointLocation"
 
-</TabItem>
-
+    (spark.readStream
+      .option("schemaTrackingLocation", checkpoint_path)
+      .table("delta_source_table")
+      .writeStream
+      .option("checkpointLocation", checkpoint_path)
+      .toTable("output_table")
+    )
+    ```
+  
+  </TabItem>
 </Tabs>
 
 ## Delta table as a sink
@@ -226,7 +234,7 @@ The option `schemaTrackingLocation` is used to specify the path for schema track
 You can also write data into a Delta table using Structured Streaming. The transaction log enables Delta Lake to guarantee exactly-once processing, even when there are other streams or batch queries running concurrently against the table.
 
 <Aside type="note">
-The Delta Lake `VACUUM` function removes all files not managed by Delta Lake but skips any directories that begin with `_`. You can safely store checkpoints alongside other data and metadata for a Delta table using a directory structure such as `<table_name>/_checkpoints`.
+  The Delta Lake `VACUUM` function removes all files not managed by Delta Lake but skips any directories that begin with `_`. You can safely store checkpoints alongside other data and metadata for a Delta table using a directory structure such as `<table_name>/_checkpoints`.
 </Aside>
 
 ### Append mode
@@ -237,25 +245,33 @@ You can use the path method:
 
 <Tabs syncKey="code-examples">
   <TabItem label="Python">
-    <Code code={`events.writeStream
-  .format("delta")
-  .outputMode("append")
-  .option("checkpointLocation", "/tmp/delta/_checkpoints/")
-  .start("/delta/events")`} lang="python" />
+  
+    ```python
+    events.writeStream
+      .format("delta")
+      .outputMode("append")
+      .option("checkpointLocation", "/tmp/delta/_checkpoints/")
+      .start("/delta/events")
+    ```
+  
   </TabItem>
 
   <TabItem label="Scala">
-    <Code code={`events.writeStream
-  .format("delta")
-  .outputMode("append")
-  .option("checkpointLocation", "/tmp/delta/events/_checkpoints/")
-  .start("/tmp/delta/events")
+  
+    ```scala
+    events.writeStream
+      .format("delta")
+      .outputMode("append")
+      .option("checkpointLocation", "/tmp/delta/events/_checkpoints/")
+      .start("/tmp/delta/events")
 
-import io.delta.implicits._
-events.writeStream
-  .outputMode("append")
-  .option("checkpointLocation", "/tmp/delta/events/_checkpoints/")
-  .delta("/tmp/delta/events")`} lang="scala" />
+    import io.delta.implicits._
+    events.writeStream
+      .outputMode("append")
+      .option("checkpointLocation", "/tmp/delta/events/_checkpoints/")
+      .delta("/tmp/delta/events")
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -263,18 +279,26 @@ or the `toTable` method (in Spark 3.1 and higher) as follows:
 
 <Tabs syncKey="code-examples">
   <TabItem label="Python">
-    <Code code={`events.writeStream
-  .format("delta")
-  .outputMode("append")
-  .option("checkpointLocation", "/tmp/delta/events/_checkpoints/")
-  .toTable("events")`} lang="python" />
+  
+    ```python
+    events.writeStream
+      .format("delta")
+      .outputMode("append")
+      .option("checkpointLocation", "/tmp/delta/events/_checkpoints/")
+      .toTable("events")
+    ```
+  
   </TabItem>
 
   <TabItem label="Scala">
-    <Code code={`events.writeStream
-  .outputMode("append")
-  .option("checkpointLocation", "/tmp/delta/events/_checkpoints/")
-  .toTable("events")`} lang="scala" />
+  
+    ```scala
+    events.writeStream
+      .outputMode("append")
+      .option("checkpointLocation", "/tmp/delta/events/_checkpoints/")
+      .toTable("events")
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -284,30 +308,38 @@ You can also use Structured Streaming to replace the entire table with every bat
 
 <Tabs syncKey="code-examples">
   <TabItem label="Python">
-    <Code code={`(spark.readStream
-  .format("delta")
-  .load("/tmp/delta/events")
-  .groupBy("customerId")
-  .count()
-  .writeStream
-  .format("delta")
-  .outputMode("complete")
-  .option("checkpointLocation", "/tmp/delta/eventsByCustomer/_checkpoints/")
-  .start("/tmp/delta/eventsByCustomer")
-)`} lang="python" />
+  
+    ```python
+    (spark.readStream
+      .format("delta")
+      .load("/tmp/delta/events")
+      .groupBy("customerId")
+      .count()
+      .writeStream
+      .format("delta")
+      .outputMode("complete")
+      .option("checkpointLocation", "/tmp/delta/eventsByCustomer/_checkpoints/")
+      .start("/tmp/delta/eventsByCustomer")
+    )
+    ```
+  
   </TabItem>
 
   <TabItem label="Scala">
-    <Code code={`spark.readStream
-  .format("delta")
-  .load("/tmp/delta/events")
-  .groupBy("customerId")
-  .count()
-  .writeStream
-  .format("delta")
-  .outputMode("complete")
-  .option("checkpointLocation", "/tmp/delta/eventsByCustomer/_checkpoints/")
-  .start("/tmp/delta/eventsByCustomer")`} lang="scala" />
+  
+    ```scala
+    spark.readStream
+      .format("delta")
+      .load("/tmp/delta/events")
+      .groupBy("customerId")
+      .count()
+      .writeStream
+      .format("delta")
+      .outputMode("complete")
+      .option("checkpointLocation", "/tmp/delta/eventsByCustomer/_checkpoints/")
+      .start("/tmp/delta/eventsByCustomer")
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -343,17 +375,26 @@ The same `DataFrameWriter` options can be used to achieve the idempotent writes 
 
 <Tabs syncKey="code-examples">
   <TabItem label="Python">
-    <Code code={`app_id = ... # A unique string that is used as an application ID.
+  
+    ```python
+    app_id = ... # A unique string that is used as an application ID.
 
-def writeToDeltaLakeTableIdempotent(batch_df, batch_id): batch_df.write.format(...).option("txnVersion", batch_id).option("txnAppId", app_id).save(...) # location 1 batch_df.write.format(...).option("txnVersion", batch_id).option("txnAppId", app_id).save(...) # location 2`} lang="python" />
-
+    def writeToDeltaLakeTableIdempotent(batch_df, batch_id):
+      batch_df.write.format(...).option("txnVersion", batch_id).option("txnAppId", app_id).save(...) # location 1
+      batch_df.write.format(...).option("txnVersion", batch_id).option("txnAppId", app_id).save(...) # location 2
+    ```
+  
   </TabItem>
 
   <TabItem label="Scala">
-    <Code code={`val appId = ... // A unique string that is used as an application ID.
-streamingDF.writeStream.foreachBatch { (batchDF: DataFrame, batchId: Long) =>
-  batchDF.write.format(...).option("txnVersion", batchId).option("txnAppId", appId).save(...)  // location 1
-  batchDF.write.format(...).option("txnVersion", batchId).option("txnAppId", appId).save(...)  // location 2
-}`} lang="scala" />
+  
+    ```scala
+    val appId = ... // A unique string that is used as an application ID.
+    streamingDF.writeStream.foreachBatch { (batchDF: DataFrame, batchId: Long) =>
+      batchDF.write.format(...).option("txnVersion", batchId).option("txnAppId", appId).save(...)  // location 1
+      batchDF.write.format(...).option("txnVersion", batchId).option("txnAppId", appId).save(...)  // location 2
+    }
+    ```
+  
   </TabItem>
 </Tabs>

@@ -3,8 +3,7 @@ title: Table utility commands
 description: Learn about Delta Lake utility commands.
 ---
 
-import { Aside, Code, Tabs, TabItem } from "@astrojs/starlight/components";
-import { Image } from "astro:assets";
+import { Aside, Tabs, TabItem } from "@astrojs/starlight/components";
 
 Delta tables support a number of utility commands.
 
@@ -21,68 +20,82 @@ You can remove files no longer referenced by a Delta table and are older than th
   - `vacuum` removes all files from directories not managed by Delta Lake,
   ignoring directories beginning with `_`. If you are storing additional
   metadata like Structured Streaming checkpoints within a Delta table directory,
-  use a directory name such as `_checkpoints`. - `vacuum` deletes only data
-  files, not log files. Log files are deleted automatically and asynchronously
+  use a directory name such as `_checkpoints`.
+  - `vacuum` deletes only data files, not log files. Log files are deleted automatically and asynchronously
   after checkpoint operations. The default retention period of log files is 30
   days, configurable through the `delta.logRetentionDuration` property which you
   set with the `ALTER TABLE SET TBLPROPERTIES` SQL method. See [Table
-  properties](/delta-batch/#table-properties). - The ability to [time
-  travel](/delta-batch/#query-an-older-snapshot-of-a-table-time-travel) back to
+  properties](/delta-batch/#table-properties).
+  - The ability to [time travel](/delta-batch/#query-an-older-snapshot-of-a-table-time-travel) back to
   a version older than the retention period is lost after running `vacuum`.
 </Aside>
 
+
 <Tabs syncKey="code-examples">
   <TabItem label="SQL">
-    <Code code={`VACUUM eventsTable   -- This runs VACUUM in 'FULL' mode and deletes data files outside of the retention duration and all files in the table directory not referenced by the table.
+  
+    ```sql
+    VACUUM eventsTable   -- This runs VACUUM in ‘FULL’ mode and deletes data files outside of the retention duration and all files in the table directory not referenced by the table.
 
-VACUUM eventsTable LITE -- This VACUUM in 'LITE' mode runs faster. -- Instead of finding all files in the table directory, \`VACUUM LITE\` uses the Delta transaction log to identify and remove files no longer referenced by any table versions within the retention duration. -- If \`VACUUM LITE\` cannot be completed because the Delta log has been pruned a \`DELTA_CANNOT_VACUUM_LITE\` exception is raised. -- This mode is available only in Delta 3.3 and above.
+    VACUUM eventsTable LITE   -- This VACUUM in ‘LITE’ mode runs faster.
+                              -- Instead of finding all files in the table directory, `VACUUM LITE` uses the Delta transaction log to identify and remove files no longer referenced by any table versions within the retention duration.
+                              -- If `VACUUM LITE` cannot be completed because the Delta log has been pruned a `DELTA_CANNOT_VACUUM_LITE` exception is raised.
+                              -- This mode is available only in Delta 3.3 and above.
 
-VACUUM '/data/events' -- vacuum files in path-based table
+    VACUUM '/data/events' -- vacuum files in path-based table
 
-VACUUM delta.\`/data/events/\`
+    VACUUM delta.`/data/events/`
 
-VACUUM delta.\`/data/events/\` RETAIN 100 HOURS -- vacuum files not required by versions more than 100 hours old
+    VACUUM delta.`/data/events/` RETAIN 100 HOURS  -- vacuum files not required by versions more than 100 hours old
 
-VACUUM eventsTable DRY RUN -- do dry run to get the list of files to be deleted
+    VACUUM eventsTable DRY RUN    -- do dry run to get the list of files to be deleted
 
-VACUUM eventsTable USING INVENTORY inventoryTable —- vacuum files based on a provided reservoir of files as a delta table
+    VACUUM eventsTable USING INVENTORY inventoryTable  —- vacuum files based on a provided reservoir of files as a delta table
 
-VACUUM eventsTable USING INVENTORY (select \* from inventoryTable) —- vacuum files based on a provided reservoir of files as spark SQL query`} lang="sql" />
-
+    VACUUM eventsTable USING INVENTORY (select * from inventoryTable)  —- vacuum files based on a provided reservoir of files as spark SQL query
+    ```
+  
   </TabItem>
-
   <TabItem label="Python">
-    <Code code={`from delta.tables import *
+  
+    ```python
+    from delta.tables import *
 
-deltaTable = DeltaTable.forPath(spark, pathToTable) # path-based tables, or deltaTable = DeltaTable.forName(spark, tableName) # Hive metastore-based tables
+    deltaTable = DeltaTable.forPath(spark, pathToTable)  # path-based tables, or
+    deltaTable = DeltaTable.forName(spark, tableName)    # Hive metastore-based tables
 
-deltaTable.vacuum() # vacuum files not required by versions older than the default retention period
+    deltaTable.vacuum()        # vacuum files not required by versions older than the default retention period
 
-deltaTable.vacuum(100) # vacuum files not required by versions more than 100 hours old`} lang="python" />
-
+    deltaTable.vacuum(100)     # vacuum files not required by versions more than 100 hours old
+    ```
+  
   </TabItem>
-
   <TabItem label="Scala">
-    <Code code={`import io.delta.tables._
+  
+    ```scala
+    import io.delta.tables._
 
-val deltaTable = DeltaTable.forPath(spark, pathToTable)
+    val deltaTable = DeltaTable.forPath(spark, pathToTable)
 
-deltaTable.vacuum() // vacuum files not required by versions older than the default retention period
+    deltaTable.vacuum()        // vacuum files not required by versions older than the default retention period
 
-deltaTable.vacuum(100) // vacuum files not required by versions more than 100 hours old`} lang="scala" />
-
+    deltaTable.vacuum(100)     // vacuum files not required by versions more than 100 hours old
+    ```
+  
   </TabItem>
-
   <TabItem label="Java">
-    <Code code={`import io.delta.tables.*;
-import org.apache.spark.sql.functions;
+  
+    ```java
+    import io.delta.tables.*;
+    import org.apache.spark.sql.functions;
 
-DeltaTable deltaTable = DeltaTable.forPath(spark, pathToTable);
+    DeltaTable deltaTable = DeltaTable.forPath(spark, pathToTable);
 
-deltaTable.vacuum(); // vacuum files not required by versions older than the default retention period
+    deltaTable.vacuum();        // vacuum files not required by versions older than the default retention period
 
-deltaTable.vacuum(100); // vacuum files not required by versions more than 100 hours old`} lang="java" />
-
+    deltaTable.vacuum(100);     // vacuum files not required by versions more than 100 hours old
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -95,16 +108,15 @@ deltaTable.vacuum(100); // vacuum files not required by versions more than 100 h
 See the [Delta Lake APIs](/delta-apidoc/) for Scala, Java, and Python syntax details.
 
 <Aside type="caution">
-It is recommended that you set a retention interval to be at least 7 days,
-because old snapshots and uncommitted files can still be in use by concurrent
-readers or writers to the table. If `VACUUM` cleans up active files,
-concurrent readers can fail or, worse, tables can be corrupted when `VACUUM`
-deletes files that have not yet been committed. You must choose an interval
-that is longer than the longest running concurrent transaction and the longest
-period that any stream can lag behind the most recent update to the table.
+  It is recommended that you set a retention interval to be at least 7 days,
+  because old snapshots and uncommitted files can still be in use by concurrent
+  readers or writers to the table. If `VACUUM` cleans up active files,
+  concurrent readers can fail or, worse, tables can be corrupted when `VACUUM`
+  deletes files that have not yet been committed. You must choose an interval
+  that is longer than the longest running concurrent transaction and the longest
+  period that any stream can lag behind the most recent update to the table.
 
-Delta Lake has a safety check to prevent you from running a dangerous `VACUUM` command. If you are certain that there are no operations being performed on this table that take longer than the retention interval you plan to specify, you can turn off this safety check by setting the Spark configuration property `spark.databricks.delta.retentionDurationCheck.enabled` to `false`.
-
+  Delta Lake has a safety check to prevent you from running a dangerous `VACUUM` command. If you are certain that there are no operations being performed on this table that take longer than the retention interval you plan to specify, you can turn off this safety check by setting the Spark configuration property `spark.databricks.delta.retentionDurationCheck.enabled` to `false`.
 </Aside>
 
 ### Inventory Table
@@ -122,49 +134,60 @@ An inventory table contains a list of file paths together with their size, type 
 
 You can retrieve information on the operations, user, timestamp, and so on for each write to a Delta table by running the `history` command. The operations are returned in reverse chronological order. By default table history is retained for 30 days.
 
-**SQL**
-
-```sql
-DESCRIBE HISTORY '/data/events/'          -- get the full history of the table
-
-DESCRIBE HISTORY delta.`/data/events/`
-
-DESCRIBE HISTORY '/data/events/' LIMIT 1  -- get the last operation only
-
-DESCRIBE HISTORY eventsTable
-```
-
 See [Configure SparkSession](/delta-batch/#configure-sparksession) for the steps to enable support for SQL commands in Apache Spark.
 
-<Tabs>
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL">
+  
+    ```sql
+    DESCRIBE HISTORY '/data/events/'          -- get the full history of the table
+
+    DESCRIBE HISTORY delta.`/data/events/`
+
+    DESCRIBE HISTORY '/data/events/' LIMIT 1  -- get the last operation only
+
+    DESCRIBE HISTORY eventsTable
+    ```
+  
+  </TabItem>
   <TabItem label="Python">
-    <Code
-      code={`from delta.tables import *
+  
+    ```python
+    from delta.tables import *
 
-deltaTable = DeltaTable.forPath(spark, pathToTable)
+    deltaTable = DeltaTable.forPath(spark, pathToTable)
 
-detailDF = deltaTable.detail()`} lang="python" />
+    fullHistoryDF = deltaTable.history()    # get the full history of the table
 
+    lastOperationDF = deltaTable.history(1) # get the last operation
+    ```
+  
   </TabItem>
-
   <TabItem label="Scala">
-    <Code
-      code={`import io.delta.tables._
+  
+    ```scala
+    import io.delta.tables._
 
-val deltaTable = DeltaTable.forPath(spark, pathToTable)
+    val deltaTable = DeltaTable.forPath(spark, pathToTable)
 
-val detailDF = deltaTable.detail()`} lang="scala" />
+    val fullHistoryDF = deltaTable.history()    // get the full history of the table
 
+    val lastOperationDF = deltaTable.history(1) // get the last operation
+    ```
+  
   </TabItem>
-
   <TabItem label="Java">
-    <Code
-      code={`import io.delta.tables.*;
+  
+    ```java
+    import io.delta.tables.*;
 
-DeltaTable deltaTable = DeltaTable.forPath(spark, pathToTable);
+    DeltaTable deltaTable = DeltaTable.forPath(spark, pathToTable);
 
-DataFrame detailDF = deltaTable.detail();`} lang="java" />
+    DataFrame fullHistoryDF = deltaTable.history();       // get the full history of the table
 
+    DataFrame lastOperationDF = deltaTable.history(1);    // fetch the last operation on the DeltaTable
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -203,7 +226,7 @@ The output of the `history` operation has the following columns.
 ```
 
 <Aside type="note">
-  - Some of the columns may be nulls because the corresponding information may
+  Some of the columns may be nulls because the corresponding information may
   not be available in your environment. - Columns added in the future will
   always be added after the last column.
 </Aside>
@@ -270,9 +293,6 @@ The following table lists the map key definitions by operation.
 |  | numDeletedFiles | Number of deleted files. |
 |  | numVacuumedDirectories | Number of vacuumed directories. |
 |  | numFilesToDelete | Number of files to delete. |
-
-| Operation | Metric name | Description |
-| :-- | :-- | :-- |
 | RESTORE |  |  |
 |  | tableSizeAfterRestore | Table size in bytes after restore. |
 |  | numOfFilesAfterRestore | Number of files in the table after restore. |
@@ -285,45 +305,50 @@ The following table lists the map key definitions by operation.
 
 You can retrieve detailed information about a Delta table (for example, number of files, data size) using `DESCRIBE DETAIL`.
 
-**SQL**
-
-```sql
-DESCRIBE DETAIL '/data/events/'
-
-DESCRIBE DETAIL eventsTable
-```
-
 See [Configure SparkSession](/delta-batch/#configure-sparksession) for the steps to enable support for SQL commands in Apache Spark.
 
-<Tabs>
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL">
+  
+    ```sql
+    DESCRIBE DETAIL '/data/events/'
+
+    DESCRIBE DETAIL eventsTable
+    ```
+  
+  </TabItem>
   <TabItem label="Python">
-    <Code
-      code={`from delta.tables import *
+  
+    ```python
+    from delta.tables import *
 
-deltaTable = DeltaTable.forPath(spark, pathToTable)
+    deltaTable = DeltaTable.forPath(spark, pathToTable)
 
-detailDF = deltaTable.detail()`} lang="python" />
-
+    detailDF = deltaTable.detail()
+    ```
+  
   </TabItem>
-
   <TabItem label="Scala">
-    <Code
-      code={`import io.delta.tables._
+  
+    ```scala
+    import io.delta.tables._
 
-val deltaTable = DeltaTable.forPath(spark, pathToTable)
+    val deltaTable = DeltaTable.forPath(spark, pathToTable)
 
-val detailDF = deltaTable.detail()`} lang="scala" />
-
+    val detailDF = deltaTable.detail()
+    ```
+  
   </TabItem>
-
   <TabItem label="Java">
-    <Code
-      code={`import io.delta.tables.*;
+  
+    ```java
+    import io.delta.tables.*;
 
-DeltaTable deltaTable = DeltaTable.forPath(spark, pathToTable);
+    DeltaTable deltaTable = DeltaTable.forPath(spark, pathToTable);
 
-DataFrame detailDF = deltaTable.detail();`} lang="java" />
-
+    DataFrame detailDF = deltaTable.detail();
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -361,28 +386,35 @@ You can a generate manifest file for a Delta table that can be used by other pro
 
 <Tabs syncKey="code-examples">
   <TabItem label="SQL">
-    <Code code={`GENERATE symlink_format_manifest FOR TABLE delta.\`<path-to-delta-table>\``} lang="sql" />
+  
+    ```sql
+    GENERATE symlink_format_manifest FOR TABLE delta.`<path-to-delta-table>`
+    ```
+  
   </TabItem>
-
-<TabItem label="Python">
-  <Code
-    code={`deltaTable = DeltaTable.forPath(<path-to-delta-table>)
-deltaTable.generate("symlink_format_manifest")`}
-    lang="python"
-  />
-</TabItem>
-
-<TabItem label="Scala">
-  <Code
-    code={`val deltaTable = DeltaTable.forPath(<path-to-delta-table>)
-deltaTable.generate("symlink_format_manifest")`}
-    lang="scala"
-  />
-</TabItem>
-
+  <TabItem label="Python">
+  
+    ```python
+    deltaTable = DeltaTable.forPath(<path-to-delta-table>)
+    deltaTable.generate("symlink_format_manifest")
+    ```
+  
+  </TabItem>
+  <TabItem label="Scala">
+  
+    ```scala
+    val deltaTable = DeltaTable.forPath(<path-to-delta-table>)
+    deltaTable.generate("symlink_format_manifest")
+    ```
+  
+  </TabItem>
   <TabItem label="Java">
-    <Code code={`DeltaTable deltaTable = DeltaTable.forPath(<path-to-delta-table>);
-deltaTable.generate("symlink_format_manifest");`} lang="java" />
+  
+    ```java
+    DeltaTable deltaTable = DeltaTable.forPath(<path-to-delta-table>);
+    deltaTable.generate("symlink_format_manifest");
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -403,46 +435,60 @@ By default, this command will collect per-file statistics (e.g. minimum and maxi
 
 <Tabs syncKey="code-examples">
   <TabItem label="SQL">
-    <Code code={`-- Convert unpartitioned Parquet table at path '<path-to-table>'
-CONVERT TO DELTA parquet.\`<path-to-table>\`
+  
+    ```sql
+    -- Convert unpartitioned Parquet table at path '<path-to-table>'
+    CONVERT TO DELTA parquet.`<path-to-table>`
 
--- Convert unpartitioned Parquet table and disable statistics collection CONVERT TO DELTA parquet.\`<path-to-table>\` NO STATISTICS
+    -- Convert unpartitioned Parquet table and disable statistics collection
+    CONVERT TO DELTA parquet.`<path-to-table>` NO STATISTICS
 
--- Convert partitioned Parquet table at path '<path-to-table>' and partitioned by integer columns named 'part' and 'part2' CONVERT TO DELTA parquet.\`<path-to-table>\` PARTITIONED BY (part int, part2 int)
+    -- Convert partitioned Parquet table at path '<path-to-table>' and partitioned by integer columns named 'part' and 'part2'
+    CONVERT TO DELTA parquet.`<path-to-table>` PARTITIONED BY (part int, part2 int)
 
--- Convert partitioned Parquet table and disable statistics collection CONVERT TO DELTA parquet.\`<path-to-table>\` NO STATISTICS PARTITIONED BY (part int, part2 int)`} lang="sql" />
-
+    -- Convert partitioned Parquet table and disable statistics collection
+    CONVERT TO DELTA parquet.`<path-to-table>` NO STATISTICS PARTITIONED BY (part int, part2 int)
+    ```
+  
   </TabItem>
-
   <TabItem label="Python">
-    <Code code={`from delta.tables import *
+  
+    ```python
+    from delta.tables import *
 
-# Convert unpartitioned Parquet table at path '<path-to-table>'
+    # Convert unpartitioned Parquet table at path '<path-to-table>'
+    deltaTable = DeltaTable.convertToDelta(spark, "parquet.`<path-to-table>`")
 
-deltaTable = DeltaTable.convertToDelta(spark, "parquet.\`<path-to-table>\`")
-
-# Convert partitioned parquet table at path '<path-to-table>' and partitioned by integer column named 'part'
-
-partitionedDeltaTable = DeltaTable.convertToDelta(spark, "parquet.\`<path-to-table>\`", "part int")`} lang="python" />
-
+    # Convert partitioned parquet table at path '<path-to-table>' and partitioned by integer column named 'part'
+    partitionedDeltaTable = DeltaTable.convertToDelta(spark, "parquet.`<path-to-table>`", "part int")
+    ```
+  
   </TabItem>
-
   <TabItem label="Scala">
-    <Code code={`import io.delta.tables._
+  
+    ```scala
+    import io.delta.tables._
 
-// Convert unpartitioned Parquet table at path '<path-to-table>' val deltaTable = DeltaTable.convertToDelta(spark, "parquet.\`<path-to-table>\`")
+    // Convert unpartitioned Parquet table at path '<path-to-table>'
+    val deltaTable = DeltaTable.convertToDelta(spark, "parquet.`<path-to-table>`")
 
-// Convert partitioned Parquet table at path '<path-to-table>' and partitioned by integer columns named 'part' and 'part2' val partitionedDeltaTable = DeltaTable.convertToDelta(spark, "parquet.\`<path-to-table>\`", "part int, part2 int")`} lang="scala" />
-
+    // Convert partitioned Parquet table at path '<path-to-table>' and partitioned by integer columns named 'part' and 'part2'
+    val partitionedDeltaTable = DeltaTable.convertToDelta(spark, "parquet.`<path-to-table>`", "part int, part2 int")
+    ```
+  
   </TabItem>
-
   <TabItem label="Java">
-    <Code code={`import io.delta.tables.*;
+  
+    ```java
+    import io.delta.tables.*;
 
-// Convert unpartitioned Parquet table at path '<path-to-table>' DeltaTable deltaTable = DeltaTable.convertToDelta(spark, "parquet.\`<path-to-table>\`");
+    // Convert unpartitioned Parquet table at path '<path-to-table>'
+    DeltaTable deltaTable = DeltaTable.convertToDelta(spark, "parquet.`<path-to-table>`");
 
-// Convert partitioned Parquet table at path '<path-to-table>' and partitioned by integer columns named 'part' and 'part2' DeltaTable deltaTable = DeltaTable.convertToDelta(spark, "parquet.\`<path-to-table>\`", "part int, part2 int");`} lang="java" />
-
+    // Convert partitioned Parquet table at path '<path-to-table>' and partitioned by integer columns named 'part' and 'part2'
+    DeltaTable deltaTable = DeltaTable.convertToDelta(spark, "parquet.`<path-to-table>`", "part int, part2 int");
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -461,23 +507,28 @@ You can convert an Iceberg table to a Delta table in place if the underlying fil
 
 The following command creates a Delta Lake transaction log based on the Iceberg table's native file manifest, schema and partitioning information. The converter also collects column stats during the conversion, unless `NO STATISTICS` is specified.
 
-```sql
--- Convert the Iceberg table in the path <path-to-table>.
-CONVERT TO DELTA iceberg.\`<path-to-table>\`
+<Tabs syncKey="code-examples">
+  <TabItem label="SQL">
 
--- Convert the Iceberg table in the path <path-to-table> without collecting statistics.
-CONVERT TO DELTA iceberg.\`<path-to-table>\` NO STATISTICS
-```
+    ```sql
+    -- Convert the Iceberg table in the path <path-to-table>.
+    CONVERT TO DELTA iceberg.\`<path-to-table>\`
+
+    -- Convert the Iceberg table in the path <path-to-table> without collecting statistics.
+    CONVERT TO DELTA iceberg.\`<path-to-table>\` NO STATISTICS
+    ```
+  
+  </TabItem>
+</Tabs>
 
 <Aside type="caution" title="Important">
-An additional jar `delta-iceberg` is needed to use the converter. For example, `bin/spark-sql --packages io.delta:delta-spark_2.12:3.0.0,io.delta:delta-iceberg_2.12:3.0.0:...`.
+  An additional jar `delta-iceberg` is needed to use the converter. For example, `bin/spark-sql --packages io.delta:delta-spark_2.12:3.0.0,io.delta:delta-iceberg_2.12:3.0.0:...`.
 
-`delta-iceberg` is currently not available for the Delta Lake 2.4.0 release since `iceberg-spark-runtime` does not support Spark 3.4 yet. It is available for Delta Lake 2.3.0.
-
+  `delta-iceberg` is currently not available for the Delta Lake 2.4.0 release since `iceberg-spark-runtime` does not support Spark 3.4 yet. It is available for Delta Lake 2.3.0.
 </Aside>
 
 <Aside type="note">
-  - Converting Iceberg metastore tables is not supported. - Converting Iceberg
+  Converting Iceberg metastore tables is not supported. - Converting Iceberg
   tables that have experienced [partition
   evolution](https://iceberg.apache.org/docs/latest/evolution/#partition-evolution)
   is not supported. - Converting Iceberg merge-on-read tables that have
@@ -499,51 +550,66 @@ You can restore a Delta table to its earlier state by using the `RESTORE` comman
   type="caution"
   title="Important"
 >
-  - You can restore an already restored table. - Restoring a table to an older
+  - You can restore an already restored table.
+  - Restoring a table to an older
   version where the data files were deleted manually or by `vacuum` will fail.
   Restoring to this version partially is still possible if
-  `spark.sql.files.ignoreMissingFiles` is set to `true`. - The timestamp format
+  `spark.sql.files.ignoreMissingFiles` is set to `true`.
+  - The timestamp format
   for restoring to an earlier state is `yyyy-MM-dd HH:mm:ss`. Providing only a
   date(`yyyy-MM-dd`) string is also supported.
 </Aside>
 
 <Tabs syncKey="code-examples">
   <TabItem label="SQL">
-    <Code code={`RESTORE TABLE db.target_table TO VERSION AS OF <version>
-RESTORE TABLE delta.\`/data/target/\` TO TIMESTAMP AS OF <timestamp>`} lang="sql" />
+  
+    ```sql
+    RESTORE TABLE db.target_table TO VERSION AS OF <version>
+    RESTORE TABLE delta.`/data/target/` TO TIMESTAMP AS OF <timestamp>
+    ```
+  
   </TabItem>
-
   <TabItem label="Python">
-    <Code code={`from delta.tables import *
+  
+    ```python
+    from delta.tables import *
 
-deltaTable = DeltaTable.forPath(spark, <path-to-table>) # path-based tables, or deltaTable = DeltaTable.forName(spark, <table-name>) # Hive metastore-based tables
+    deltaTable = DeltaTable.forPath(spark, <path-to-table>)  # path-based tables, or
+    deltaTable = DeltaTable.forName(spark, <table-name>)    # Hive metastore-based tables
 
-deltaTable.restoreToVersion(0) # restore table to oldest version
+    deltaTable.restoreToVersion(0) # restore table to oldest version
 
-deltaTable.restoreToTimestamp('2019-02-14') # restore to a specific timestamp`} lang="python" />
-
+    deltaTable.restoreToTimestamp('2019-02-14') # restore to a specific timestamp
+    ```
+  
   </TabItem>
-
   <TabItem label="Scala">
-    <Code code={`import io.delta.tables._
+  
+    ```scala
+    import io.delta.tables._
 
-val deltaTable = DeltaTable.forPath(spark, <path-to-table>) val deltaTable = DeltaTable.forName(spark, <table-name>)
+    val deltaTable = DeltaTable.forPath(spark, <path-to-table>)
+    val deltaTable = DeltaTable.forName(spark, <table-name>)
 
-deltaTable.restoreToVersion(0) // restore table to oldest version
+    deltaTable.restoreToVersion(0) // restore table to oldest version
 
-deltaTable.restoreToTimestamp("2019-02-14") // restore to a specific timestamp`} lang="scala" />
-
+    deltaTable.restoreToTimestamp("2019-02-14") // restore to a specific timestamp
+    ```
+  
   </TabItem>
-
   <TabItem label="Java">
-    <Code code={`import io.delta.tables.*;
+  
+    ```java
+    import io.delta.tables.*;
 
-DeltaTable deltaTable = DeltaTable.forPath(spark, <path-to-table>); DeltaTable deltaTable = DeltaTable.forName(spark, <table-name>);
+    DeltaTable deltaTable = DeltaTable.forPath(spark, <path-to-table>);
+    DeltaTable deltaTable = DeltaTable.forName(spark, <table-name>);
 
-deltaTable.restoreToVersion(0) // restore table to oldest version
+    deltaTable.restoreToVersion(0) // restore table to oldest version
 
-deltaTable.restoreToTimestamp("2019-02-14") // restore to a specific timestamp`} lang="java" />
-
+    deltaTable.restoreToTimestamp("2019-02-14") // restore to a specific timestamp
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -600,16 +666,20 @@ The metadata that is cloned includes: schema, partitioning information, invarian
   `vacuum` on the source table, clients will no longer be able to read the
   referenced data files and a `FileNotFoundException` will be thrown. In this
   case, running clone with `replace` over the shallow clone will repair the
-  clone. - If a target already has a non-Delta table at that path, cloning with
+  clone.
+  - If a target already has a non-Delta table at that path, cloning with
   `replace` to that target will create a Delta log. Then, you can clean up any
-  existing data by running `vacuum`. - If a Delta table exists in the target
+  existing data by running `vacuum`.
+  - If a Delta table exists in the target
   path, a new commit is created that includes the new metadata and new data from
   the source table. In the case of `replace`, the target table needs to be
-  emptied first to avoid data duplication. - Cloning a table is not the same as
+  emptied first to avoid data duplication.
+  - Cloning a table is not the same as
   `Create Table As Select` or `CTAS`. A shallow clone takes the metadata of the
   source table. Cloning also has simpler syntax: you don't need to specify
   partitioning, format, invariants, nullability and so on as they are taken from
-  the source table. - A cloned table has an independent history from its source
+  the source table.
+  - A cloned table has an independent history from its source
   table. Time travel queries on a cloned table will not work with the same
   inputs as they work on its source table. For example, if the source table was
   at version 100 and we are creating a new table by cloning it, the new table
@@ -619,18 +689,21 @@ The metadata that is cloned includes: schema, partitioning information, invarian
 
 <Tabs syncKey="code-examples">
   <TabItem label="SQL">
-    <Code code={`CREATE TABLE delta.\`/data/target/\` SHALLOW CLONE delta.\`/data/source/\` -- Create a shallow clone of /data/source at /data/target
+  
+    ```sql
+    CREATE TABLE delta.`/data/target/` SHALLOW CLONE delta.`/data/source/` -- Create a shallow clone of /data/source at /data/target
 
-CREATE OR REPLACE TABLE db.target_table SHALLOW CLONE db.source_table -- Replace the target. target needs to be emptied
+    CREATE OR REPLACE TABLE db.target_table SHALLOW CLONE db.source_table -- Replace the target. target needs to be emptied
 
-CREATE TABLE IF NOT EXISTS delta.\`/data/target/\` SHALLOW CLONE db.source_table -- No-op if the target table exists
+    CREATE TABLE IF NOT EXISTS delta.`/data/target/` SHALLOW CLONE db.source_table -- No-op if the target table exists
 
-CREATE TABLE db.target_table SHALLOW CLONE delta.\`/data/source\`
+    CREATE TABLE db.target_table SHALLOW CLONE delta.`/data/source`
 
-CREATE TABLE db.target_table SHALLOW CLONE delta.\`/data/source\` VERSION AS OF version
+    CREATE TABLE db.target_table SHALLOW CLONE delta.`/data/source` VERSION AS OF version
 
-CREATE TABLE db.target_table SHALLOW CLONE delta.\`/data/source\` TIMESTAMP AS OF timestamp_expression -- timestamp can be like "2019-01-01" or like date_sub(current_date(), 1)`} lang="sql" />
-
+    CREATE TABLE db.target_table SHALLOW CLONE delta.`/data/source` TIMESTAMP AS OF timestamp_expression -- timestamp can be like “2019-01-01” or like date_sub(current_date(), 1)
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -651,11 +724,12 @@ When doing machine learning, you may want to archive a certain version of a tabl
 
 <Tabs syncKey="code-examples">
   <TabItem label="SQL">
-    <Code
-      code={`-- Trained model on version 15 of Delta table
-CREATE TABLE delta.\`/model/dataset\` SHALLOW CLONE entire_dataset VERSION AS OF 15`}
-      lang="sql"
-    />
+  
+    ```sql
+    -- Trained model on version 15 of Delta table
+    CREATE TABLE delta.`/model/dataset` SHALLOW CLONE entire_dataset VERSION AS OF 15
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -665,15 +739,24 @@ To test a workflow on a production table without corrupting the table, you can e
 
 <Tabs syncKey="code-examples">
   <TabItem label="SQL">
-    <Code code={`-- Perform shallow clone
-CREATE OR REPLACE TABLE my_test SHALLOW CLONE my_prod_table;
+  
+    ```sql
+    -- Perform shallow clone
+    CREATE OR REPLACE TABLE my_test SHALLOW CLONE my_prod_table;
 
-UPDATE my_test WHERE user_id is null SET invalid=true; -- Run a bunch of validations. Once happy:
+    UPDATE my_test WHERE user_id is null SET invalid=true;
+    -- Run a bunch of validations. Once happy:
 
--- This should leverage the update information in the clone to prune to only -- changed files in the clone if possible MERGE INTO my_prod_table USING my_test ON my_test.user_id <=> my_prod_table.user_id WHEN MATCHED AND my_test.user_id is null THEN UPDATE \*;
+    -- This should leverage the update information in the clone to prune to only
+    -- changed files in the clone if possible
+    MERGE INTO my_prod_table
+    USING my_test
+    ON my_test.user_id <=> my_prod_table.user_id
+    WHEN MATCHED AND my_test.user_id is null THEN UPDATE *;
 
-DROP TABLE my_test;`} lang="sql" />
-
+    DROP TABLE my_test;
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -686,15 +769,16 @@ Table property overrides are particularly useful for:
 
 <Tabs syncKey="code-examples">
   <TabItem label="SQL">
-    <Code
-      code={`CREATE OR REPLACE TABLE archive.my_table SHALLOW CLONE prod.my_table
-TBLPROPERTIES (
-  delta.logRetentionDuration = '3650 days',
-  delta.deletedFileRetentionDuration = '3650 days'
-)
-LOCATION 'xx://archive/my_table'`}
-      lang="sql"
-    />
+  
+    ```sql
+    CREATE OR REPLACE TABLE archive.my_table SHALLOW CLONE prod.my_table
+    TBLPROPERTIES (
+      delta.logRetentionDuration = '3650 days',
+      delta.deletedFileRetentionDuration = '3650 days'
+    )
+    LOCATION 'xx://archive/my_table'
+    ```
+  
   </TabItem>
 </Tabs>
 
@@ -708,9 +792,12 @@ Shallow clone for Parquet and Iceberg combines functionality used to clone Delta
 
 <Tabs syncKey="code-examples">
   <TabItem label="SQL">
-    <Code code={`CREATE OR REPLACE TABLE <target_table_name> SHALLOW CLONE parquet.\`/path/to/data\`;
+  
+    ```sql
+    CREATE OR REPLACE TABLE <target_table_name> SHALLOW CLONE parquet.`/path/to/data`;
 
-CREATE OR REPLACE TABLE <target_table_name> SHALLOW CLONE iceberg.\`/path/to/data\`;`} lang="sql" />
-
+    CREATE OR REPLACE TABLE <target_table_name> SHALLOW CLONE iceberg.`/path/to/data`;
+    ```
+  
   </TabItem>
 </Tabs>
