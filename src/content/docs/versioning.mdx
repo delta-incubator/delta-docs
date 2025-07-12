@@ -3,7 +3,7 @@ title: How does Delta Lake manage feature compatibility?
 description: Learn how Delta table protocols are versioned.
 ---
 
-import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
+import { Aside, Tabs, TabItem } from "@astrojs/starlight/components";
 
 Many Delta Lake optimizations require enabling Delta Lake features on a table. Delta Lake features are always backwards compatible, so tables written by a lower Delta Lake version can always be read and written by a higher Delta Lake version. Enabling some features breaks forward compatibility with workloads running in a lower Delta Lake version. For features that break forward compatibility, you must update all workloads that reference the upgraded tables to use a compliant Delta Lake version.
 
@@ -27,8 +27,10 @@ The following Delta Lake features break forward compatibility. Features are enab
 | Clustering | [Delta Lake 3.1.0](https://github.com/delta-io/delta/releases/tag/v3.1.0) | [Use liquid clustering for Delta tables](/delta-clustering/) |
 | Row Tracking | [Delta Lake 3.2.0](https://github.com/delta-io/delta/releases/tag/v3.2.0) | [Use row tracking for Delta tables](/row-tracking/) |
 | Type widening (Preview) | [Delta Lake 3.2.0](https://github.com/delta-io/delta/releases/tag/v3.2.0) | [Delta type widening](/delta-type-widening/) |
+| Type widening | [Delta Lake 4.0.0](https://github.com/delta-io/delta/releases/tag/v4.0.0) | [Delta type widening](/delta-type-widening/) |
 | Identity columns | [Delta Lake 3.3.0](https://github.com/delta-io/delta/releases/tag/v3.3.0) | [Use identity columns](/delta-batch/#use-identity-columns) |
-| In-Commit Timestamps | [Delta Lake 3.3.0](https://github.com/delta-io/delta/releases/tag/v3.3.0) | [Use identity columns](/delta-batch/#use-identity-columns) |
+| Variant Type | [Delta Lake 4.0.0](https://github.com/delta-io/delta/releases/tag/v4.0.0) | [Delta type widening](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#variant-data-type) |
+| Variant Shredding (Preview) | [Delta Lake 4.0.0](https://github.com/delta-io/delta/releases/tag/v4.0.0) | [Variant Shredding](https://github.com/delta-io/delta/blob/master/protocol_rfcs/variant-shredding.md) |
 
 ## What is a table protocol specification?
 
@@ -114,7 +116,9 @@ The following table shows minimum protocol versions required for Delta Lake feat
 | Vacuum Protocol Check | 7 | 3 | [Vacuum Protocol Check Spec](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#vacuum-protocol-check) |
 | Row Tracking | 7 | 3 | [Use row tracking for Delta tables](/delta-row-tracking/) |
 | Type widening (Preview) | 7 | 3 | [Delta type widening](/delta-type-widening/) |
-| In-Commit Timestamps | 7 | 3 | [In-Commit Timestamps Spec](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#in-commit-timestamps) |
+| Type widening | 7 | 3 | [Delta type widening](/delta-type-widening/) |
+| Variant Type | 7 | 3 | [Variant Type](https://github.com/delta-io/delta/blob/master/PROTOCOL.md#variant-data-type) |
+| Variant Shredding (Preview) | 7 | 3 | [Variant Shredding](https://github.com/delta-io/delta/blob/master/protocol_rfcs/variant-shredding.md) |
 
 ## Upgrading protocol versions
 

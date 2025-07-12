@@ -23,7 +23,7 @@ You set up a Presto, Trino, or Athena to Delta Lake integration using the follow
 
 ### Step 1: Generate manifests of a Delta table using Apache Spark
 
-Using Spark [configured](quick-start.html#-set-up-as-with-delta) with Delta Lake, run any of the following commands on a Delta table at location `<path-to-delta-table>`:
+Using Spark [configured](/quick-start#set-up-apache-spark-with-delta-lake) with Delta Lake, run any of the following commands on a Delta table at location `<path-to-delta-table>`:
 
 <Tabs>
 <TabItem value="sql" label="SQL" default>
@@ -59,7 +59,7 @@ deltaTable.generate("symlink_format_manifest")
 </TabItem>
 </Tabs>
 
-See [Generate a manifest file](delta-utility.html#-delta-generate) for details.
+See [Generate a manifest file](delta-utility.html#generate-a-manifest-file) for details.
 
 The `generate` command generates manifest files at `<path-to-delta-table>/_symlink_format_manifest/`. In other words, the files in this directory will contain the names of the data files (that is, Parquet files) that should be read for reading a snapshot of the Delta table.
 
@@ -140,7 +140,7 @@ Depending on what storage system you are using for Delta tables, it is possible 
 
 ### Performance
 
-Very large numbers of files can hurt the performance of Presto, Trino, and Athena. Hence it is recommended that you [compact the files](best-practices.html#-delta-compact-files) of the table before generating the manifests. The number of files should not exceed 1000 (for the entire unpartitioned table or for each partition in a partitioned table).
+Very large numbers of files can hurt the performance of Presto, Trino, and Athena. Hence it is recommended that you [compact the files](/best-practices#compact-files) of the table before generating the manifests. The number of files should not exceed 1000 (for the entire unpartitioned table or for each partition in a partitioned table).
 
 ### Schema evolution
 

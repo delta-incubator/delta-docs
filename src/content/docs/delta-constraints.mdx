@@ -3,8 +3,7 @@ title: Constraints
 description: Learn how Delta tables apply constraints.
 ---
 
-import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
-import { Code } from "@astrojs/starlight/components";
+import { Aside, Tabs, TabItem } from "@astrojs/starlight/components";
 
 Delta tables support standard SQL constraint management clauses that ensure that the quality and integrity of data added to a table is automatically verified. When a constraint is violated, Delta Lake throws an `InvariantViolationException` to signal that the new data can't be added.
 
@@ -29,6 +28,7 @@ You specify `NOT NULL` constraints in the schema when you create a table and dro
 
 <Tabs>
   <TabItem label="SQL">
+
     ```sql
     CREATE TABLE default.people10m (
         id INT NOT NULL,
@@ -55,6 +55,7 @@ You manage `CHECK` constraints using the `ALTER TABLE ADD CONSTRAINT` and `ALTER
 
 <Tabs>
   <TabItem label="SQL">
+
     ```sql
     CREATE TABLE default.people10m (
        id INT,
@@ -78,6 +79,7 @@ You manage `CHECK` constraints using the `ALTER TABLE ADD CONSTRAINT` and `ALTER
 
 <Tabs>
   <TabItem label="SQL">
+
     ```sql
     ALTER TABLE default.people10m ADD CONSTRAINT validIds CHECK (id > 1 and id < 99999999);
 
