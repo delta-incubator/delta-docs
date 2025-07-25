@@ -1,0 +1,40 @@
+name: "Upload API Docs"
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
+        description: The version of the tag you want to upload.
+
+jobs:
+  build-api-docs:
+    name: Build API docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: delta-io/delta
+          ref: ${{ inputs.version }}
+
+      - name: Install Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: "8"
+
+      - name: Setup python environment
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: delta_docs
+          environment-file: docs/apis/environment.yml
+
+      - name: Generate API docs
+        shell: bash -el {0}
+        run: python3 docs/generate_docs.py --livehtml --api-docs
+
+      - name: Upload API docs build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apidocs-${{ inputs.version }}
+          path: docs/apis/_site/api
