@@ -110,7 +110,7 @@ Delta Lake 2.0.0 introduced support for [Dynamic Partition Overwrites](/delta-ba
 
 ### Delta Lake 1.1 or below to Delta Lake 1.2 or above
 
-The [LogStore](/api/java/index.html) related code is extracted out from the `delta-core` Maven module into a new module `delta-storage` as part of the issue [#951](https://github.com/delta-io/delta/issues/951) for better code manageability. This results in an additional JAR `delta-storage-<version>.jar` dependency for `delta-core`. By default, the additional JAR is downloaded as part of the `delta-core-<version>_<scala-version>.jar` dependency. In clusters where there is _no internet connectivity_, `delta-storage-<version>.jar` cannot be downloaded. It is advised to download the `delta-storage-<version>.jar` manually and place it in the Java classpath.
+The [LogStore](/api/latest/java/index.html) related code is extracted out from the `delta-core` Maven module into a new module `delta-storage` as part of the issue [#951](https://github.com/delta-io/delta/issues/951) for better code manageability. This results in an additional JAR `delta-storage-<version>.jar` dependency for `delta-core`. By default, the additional JAR is downloaded as part of the `delta-core-<version>_<scala-version>.jar` dependency. In clusters where there is _no internet connectivity_, `delta-storage-<version>.jar` cannot be downloaded. It is advised to download the `delta-storage-<version>.jar` manually and place it in the Java classpath.
 
 ### Delta Lake 1.0 or below to Delta Lake 1.1 or above
 

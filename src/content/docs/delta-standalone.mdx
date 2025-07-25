@@ -27,11 +27,11 @@ Delta Standalone does provide basic APIs for reading Parquet data, but does not 
 
 ## APIs
 
-Delta Standalone provides classes and entities to read data, query metadata, and commit to the transaction log. A few of them are highlighted here and with their key interfaces. See the [Java API docs](/api/java/standalone/index.html) for the full set of classes and entities.
+Delta Standalone provides classes and entities to read data, query metadata, and commit to the transaction log. A few of them are highlighted here and with their key interfaces. See the [Java API docs](/api/latest/java/standalone/index.html) for the full set of classes and entities.
 
 ### DeltaLog
 
-[DeltaLog](/api/java/io/delta/standalone/DeltaLog.html) is the main interface for programmatically interacting with the metadata in the transaction log of a Delta table.
+[DeltaLog](/api/latest/java/io/delta/standalone/DeltaLog.html) is the main interface for programmatically interacting with the metadata in the transaction log of a Delta table.
 
 - Instantiate a `DeltaLog` with `DeltaLog.forTable(hadoopConf, path)` and pass in the `path` of the root location of the Delta table.
 - Access the current snapshot with `DeltaLog::snapshot`.
@@ -42,7 +42,7 @@ Delta Standalone provides classes and entities to read data, query metadata, and
 
 ### Snapshot
 
-A [Snapshot](/api/java/io/delta/standalone/Snapshot.html) represents the state of the table at a specific version.
+A [Snapshot](/api/latest/java/io/delta/standalone/Snapshot.html) represents the state of the table at a specific version.
 
 - Get a list of the metadata files by using `Snapshot::getAllFiles`.
 - For a memory-optimized iterator over the metadata files, use `Snapshot::scan` to get a `DeltaScan` (as described later), optionally by passing in a `predicate` for partition filtering.
@@ -50,7 +50,7 @@ A [Snapshot](/api/java/io/delta/standalone/Snapshot.html) represents the state o
 
 ### OptimisticTransaction
 
-The main class for committing a set of updates to the transaction log is [OptimisticTransaction](/api/java/io/delta/standalone/OptimisticTransaction.html). During a transaction, all reads must go through the `OptimisticTransaction` instance rather than the `DeltaLog` in order to detect logical conflicts and concurrent updates.
+The main class for committing a set of updates to the transaction log is [OptimisticTransaction](/api/latest/java/io/delta/standalone/OptimisticTransaction.html). During a transaction, all reads must go through the `OptimisticTransaction` instance rather than the `DeltaLog` in order to detect logical conflicts and concurrent updates.
 
 - Read metadata files during a transaction with `OptimisticTransaction::markFilesAsRead`, which returns a `DeltaScan` of files that match the `readPredicate`.
 - Commit to the transaction log with `OptimisticTransaction::commit`.
@@ -59,7 +59,7 @@ The main class for committing a set of updates to the transaction log is [Optimi
 
 ### DeltaScan
 
-[DeltaScan](/api/java/io/delta/standalone/DeltaScan.html) is a wrapper class for the files inside a `Snapshot` that match a given `readPredicate`.
+[DeltaScan](/api/latest/java/io/delta/standalone/DeltaScan.html) is a wrapper class for the files inside a `Snapshot` that match a given `readPredicate`.
 
 - Access the files that match the partition filter portion of the `readPredicate` with `DeltaScan::getFiles`. This returns a memory-optimized iterator over the metadata files in the table.
 - To further filter the returned files on non-partition columns, get the portion of input predicate not applied with `DeltaScan::getResidualPredicate`.
@@ -265,7 +265,7 @@ Delta Standalone supports concurrent reads and writes from multiple clusters wit
 
 ###### Requirements (Azure Blob storage)
 
-- A [shared key](https://docs.microsoft.com/rest/api/storageservices/authorize-with-shared-key) or [shared access signature (SAS)](https://docs.microsoft.com/azure/storage/common/storage-sas-overview).
+- A [shared key](https://docs.microsoft.com/rest/api/latest/storageservices/authorize-with-shared-key) or [shared access signature (SAS)](https://docs.microsoft.com/azure/storage/common/storage-sas-overview).
 - Hadoop’s [Azure Blob Storage libraries](https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-azure) for a version compatible with the Hadoop version Delta Standalone was compiled with.
   - 2.9.1+ for Hadoop 2
   - 3.0.1+ for Hadoop 3
