@@ -27,7 +27,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: delta_docs
-          environment-file: docs/apis/environment.yml
+          environment-file: docs/environment.yml
 
       - name: Generate API docs
         shell: bash -el {0}
