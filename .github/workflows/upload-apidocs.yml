@@ -31,7 +31,9 @@ jobs:
 
       - name: Generate API docs
         shell: bash -el {0}
-        run: python3 docs/generate_docs.py --livehtml --api-docs
+        run: python3 docs/generate_docs.py --api-docs
+        env:
+          _DELTA_LAKE_RELEASE_VERSION_: ${{ inputs.version }}
 
       - name: Upload API docs build artifact
         uses: actions/upload-artifact@v4
