@@ -29,6 +29,9 @@ jobs:
           activate-environment: delta_docs
           environment-file: docs/environment.yml
 
+      - name: Build Java code
+        run: sbt compile
+
       - name: Generate API docs
         shell: bash -el {0}
         run: python3 docs/generate_docs.py --api-docs
