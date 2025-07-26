@@ -26,13 +26,16 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: "zulu"
-          java-version: "11"
+          java-version: "8"
 
       - name: Setup python environment
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: delta_docs
           environment-file: docs/environment.yml
+
+      - name: Set JAVA_HOME
+        run: echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
 
       - name: Build Java code
         run: sbt compile
