@@ -34,6 +34,12 @@ jobs:
           activate-environment: delta_docs
           environment-file: docs/environment.yml
 
+      - name: Force install ANTLR 4.9.3 to avoid version mismatch
+        shell: bash -el {0}
+        run: |
+          pip uninstall -y antlr4-python3-runtime || true
+          pip install antlr4-python3-runtime==4.9.3
+
       - name: Set JAVA_HOME
         run: echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
 
