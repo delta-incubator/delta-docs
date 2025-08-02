@@ -1,5 +1,4 @@
-> [!NOTE]
-> The content in this repo is currently in sync with delta-io/delta@5d40e1829f4f5cb00686e24f7e0bbc94aad5e93b
+> [!NOTE] The content in this repo is currently in sync with [delta-io/delta@8f01df9](https://github.com/delta-io/delta/commit/8f01df9966c293f024021c81e86da6a593264f8b)
 
 # Delta Docs
 
