@@ -17,11 +17,19 @@ jobs:
           repository: delta-io/delta
           ref: ${{ inputs.version }}
 
+      - name: Determine Java version
+        run: |
+          if [[ "${{ inputs.version }}" == "v4."* ]]; then
+            echo "JAVA_VERSION=17" >> $GITHUB_ENV
+          else
+            echo "JAVA_VERSION=8" >> $GITHUB_ENV
+          fi
+
       - name: Install Java
         uses: actions/setup-java@v3
         with:
           distribution: "zulu"
-          java-version: "17"
+          java-version: ${{ env.JAVA_VERSION }}
 
       - name: Install SBT
         run: |
@@ -37,6 +45,7 @@ jobs:
           environment-file: docs/environment.yml
 
       - name: Fix generate_api_docs script
+        if: contains(inputs.version, 'v4')
         run: |
           sed -i 's|scala-2\.12|scala-2.13|g' docs/apis/generate_api_docs.py
           sed -i '/standalone_javadoc_gen_dir,/d' docs/apis/generate_api_docs.py
