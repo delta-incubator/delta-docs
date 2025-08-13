@@ -36,26 +36,19 @@ jobs:
           activate-environment: delta_docs
           environment-file: docs/environment.yml
 
-      - name: Run unidoc
+      - name: Fix generate_api_docs script
         run: |
-          build/sbt clean unidoc
+          sed -i 's|scala-2\.12|scala-2.13|g' docs/apis/generate_api_docs.py
+          sed -i '/standalone_javadoc_gen_dir,/d' docs/apis/generate_api_docs.py
 
-      - name: List all unidoc and javaunidoc directories
-        run: |
-          find . -type d \( -name "unidoc" -o -name "javaunidoc" \)
+      - name: Generate API docs
+        shell: bash -el {0}
+        run: python3 docs/generate_docs.py --api-docs
+        env:
+          _DELTA_LAKE_RELEASE_VERSION_: ${{ inputs.version }}
 
-      # - name: Fix scala version path in generate_api_docs script
-      #   run: |
-      #     sed -i 's|scala-2\.12|scala-2.13|g' docs/apis/generate_api_docs.py
-
-      # - name: Generate API docs
-      #   shell: bash -el {0}
-      #   run: python3 docs/generate_docs.py --api-docs
-      #   env:
-      #     _DELTA_LAKE_RELEASE_VERSION_: ${{ inputs.version }}
-
-      # - name: Upload API docs build artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: apidocs-${{ inputs.version }}
-      #     path: docs/apis/_site/api
+      - name: Upload API docs build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apidocs-${{ inputs.version }}
+          path: docs/apis/_site/api
