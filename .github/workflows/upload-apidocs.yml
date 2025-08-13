@@ -62,7 +62,10 @@ jobs:
           find docs/apis/_site/api -type d \( -name "unidoc" -o -name "javaunidoc" -o -name "html" \) | while read dir; do
             echo "Processing $dir"
             parent="$(dirname "$dir")"
-            mv "$dir"/* "$parent"/
+            # Move all files (including hidden ones) using find
+            find "$dir" -maxdepth 1 -type f -exec mv {} "$parent"/ \;
+            # Move all subdirectories
+            find "$dir" -maxdepth 1 -type d ! -path "$dir" -exec mv {} "$parent"/ \;
             rmdir "$dir"
           done
 
