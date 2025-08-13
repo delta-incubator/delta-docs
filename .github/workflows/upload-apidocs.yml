@@ -17,34 +17,24 @@ jobs:
           repository: delta-io/delta
           ref: ${{ inputs.version }}
 
-      - name: Setup sbt
-        uses: coursier/setup-action@v1
-        with:
-          apps: sbt
-
       - name: Install Java
         uses: actions/setup-java@v3
         with:
           distribution: "zulu"
-          java-version: "8"
+          java-version: "11"
+
+      - name: Install SBT
+        run: |
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
+          curl -sL https://keyserver.ubuntu.com/pks/lookup?op=get\&search=0x99E82A75642AC823 | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y sbt
 
       - name: Setup python environment
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: delta_docs
           environment-file: docs/environment.yml
-
-      - name: Force install ANTLR 4.9.3 to avoid version mismatch
-        shell: bash -el {0}
-        run: |
-          pip uninstall -y antlr4-python3-runtime || true
-          pip install antlr4-python3-runtime==4.9.3
-
-      - name: Set JAVA_HOME
-        run: echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
-
-      - name: Build Java code
-        run: sbt compile
 
       - name: Generate API docs
         shell: bash -el {0}
