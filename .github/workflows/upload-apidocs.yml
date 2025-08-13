@@ -57,6 +57,15 @@ jobs:
         env:
           _DELTA_LAKE_RELEASE_VERSION_: ${{ inputs.version }}
 
+      - name: Move doc contents up one level
+        run: |
+          find docs/apis/_site/api -type d \( -name "unidoc" -o -name "javaunidoc" -name "html" \) | while read dir; do
+            echo "Processing $dir"
+            parent="$(dirname "$dir")"
+            mv "$dir"/* "$parent"/
+            rm -rf "$dir"
+          done
+
       - name: Upload API docs build artifact
         uses: actions/upload-artifact@v4
         with:
