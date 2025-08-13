@@ -36,6 +36,10 @@ jobs:
           activate-environment: delta_docs
           environment-file: docs/environment.yml
 
+      - name: Fix scala version path in generate_api_docs script
+        run: |
+          sed -i 's|scala-2\.12|scala-2.13|g' docs/apis/generate_api_docs.py
+
       - name: Generate API docs
         shell: bash -el {0}
         run: python3 docs/generate_docs.py --api-docs
